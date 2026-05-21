@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application
+    x:Class="PushToOpen.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:conv="using:PushToOpen.Utilities">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <muxc:XamlControlsResources />
+                <ResourceDictionary Source="ms-appx:///Styles/Colors.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <conv:BoolToVisibilityConverter x:Key="BoolToVis" />
+            <conv:BoolToVisibilityConverter x:Key="InvBoolToVis" Invert="True" />
+            <conv:GateBrushConverter x:Key="GateBrush" />
+            <conv:GateLabelConverter x:Key="GateLabel" />
+            <conv:FormatDbConverter x:Key="FormatDb" />
+            <conv:SectionEqualsConverter x:Key="SectionEq" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

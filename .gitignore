@@ -1,0 +1,13 @@
+bin/
+obj/
+out/
+dist/
+.vs/
+*.user
+*.suo
+*.tlog
+*.lock.json
+*.binlog
+*.pdb
+TestResults/
+.idea/

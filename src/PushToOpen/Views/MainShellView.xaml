@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="PushToOpen.Views.MainShellView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:vm="using:PushToOpen.ViewModels"
+    xmlns:ctrl="using:PushToOpen.Controls"
+    xmlns:conv="using:PushToOpen.Utilities">
+
+    <Grid x:Name="RootGrid" Background="#0E1014">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="AppTitleBar" Grid.ColumnSpan="2" Height="44" Background="Transparent">
+            <StackPanel Orientation="Horizontal" Margin="20,0" VerticalAlignment="Center" Spacing="10">
+                <Ellipse Width="10" Height="10" Fill="{ThemeResource AccentPrimaryBrush}" />
+                <TextBlock Text="PushToOpen" FontWeight="SemiBold" Foreground="{ThemeResource TextPrimaryBrush}" />
+                <TextBlock Text="voice-activated push-to-talk"
+                           Style="{StaticResource BodyText}" Opacity="0.6" Margin="6,0,0,0" />
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Grid.Column="0" Margin="14,4,7,14"
+                Background="{ThemeResource SurfaceRaisedBrush}"
+                BorderBrush="{ThemeResource DividerBrush}" BorderThickness="1"
+                CornerRadius="14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="16,16,16,8" Spacing="2">
+                    <TextBlock Text="WORKSPACE" Style="{StaticResource LabelText}" />
+                    <TextBlock Text="{x:Bind ViewModel.Home.DeviceName, Mode=OneWay}"
+                               Style="{StaticResource BodyText}" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="10" Spacing="4">
+                    <ToggleButton Style="{StaticResource NavButton}" Content="◉  Live"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=home}" />
+                    <ToggleButton Style="{StaticResource NavButton}" Content="≋  Audio"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=audio}" />
+                    <ToggleButton Style="{StaticResource NavButton}" Content="⌨  Hotkey &amp; timing"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=hotkey}" />
+                    <ToggleButton Style="{StaticResource NavButton}" Content="◰  Overlay"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=overlay}" />
+                    <ToggleButton Style="{StaticResource NavButton}" Content="✦  Preferences"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=prefs}" />
+                </StackPanel>
+
+                <Border Grid.Row="2" Margin="14" Padding="14" CornerRadius="10"
+                        Background="{ThemeResource SurfaceFloatingBrush}">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="GATE" Style="{StaticResource LabelText}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Ellipse Width="10" Height="10"
+                                     Fill="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}" />
+                            <TextBlock Text="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateLabel}}"
+                                       Style="{StaticResource MetricText}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Margin="7,4,14,14"
+                Background="{ThemeResource SurfaceRaisedBrush}"
+                BorderBrush="{ThemeResource DividerBrush}" BorderThickness="1"
+                CornerRadius="14">
+            <ScrollViewer Padding="32">
+                <Grid>
+                    <StackPanel Spacing="20"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=home}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Live" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="Watch your mic, adjust the gate, and verify push-to-talk fires when you actually speak."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <Grid>
+                                    <TextBlock Text="Microphone level" Style="{StaticResource TitleText}" />
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource MetricText}"
+                                               Text="{x:Bind ViewModel.Home.RmsDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                </Grid>
+                                <ctrl:VuMeter Level="{x:Bind ViewModel.Home.RmsNormalized, Mode=OneWay}"
+                                              Threshold="{x:Bind ViewModel.Home.ThresholdNormalized, Mode=OneWay}"
+                                              IsActive="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay}" />
+                                <Grid>
+                                    <TextBlock Text="Peak" Style="{StaticResource LabelText}" />
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource MetricText}"
+                                               Text="{x:Bind ViewModel.Home.PeakDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <Grid>
+                                    <TextBlock Text="Threshold" Style="{StaticResource TitleText}" />
+                                    <TextBlock HorizontalAlignment="Right"
+                                               Style="{StaticResource MetricText}"
+                                               Text="{x:Bind ViewModel.Home.ThresholdDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                </Grid>
+                                <Slider Minimum="-60" Maximum="0" StepFrequency="0.5"
+                                        Value="{x:Bind ViewModel.Home.ThresholdDb, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="The mic must exceed this level to engage push-to-talk." />
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Style="{StaticResource GhostButton}" Content="Whisper"
+                                            Command="{x:Bind ViewModel.Home.ApplyPresetCommand}" CommandParameter="whisper" />
+                                    <Button Style="{StaticResource GhostButton}" Content="Soft"
+                                            Command="{x:Bind ViewModel.Home.ApplyPresetCommand}" CommandParameter="soft" />
+                                    <Button Style="{StaticResource GhostButton}" Content="Normal"
+                                            Command="{x:Bind ViewModel.Home.ApplyPresetCommand}" CommandParameter="normal" />
+                                    <Button Style="{StaticResource GhostButton}" Content="Loud"
+                                            Command="{x:Bind ViewModel.Home.ApplyPresetCommand}" CommandParameter="loud" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnSpacing="24">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="DETECTION" Style="{StaticResource LabelText}" />
+                                    <ToggleSwitch Header="Enable threshold detection"
+                                                  IsOn="{x:Bind ViewModel.Home.Enabled, Mode=TwoWay}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Spacing="6">
+                                    <TextBlock Text="MUTE" Style="{StaticResource LabelText}" />
+                                    <ToggleSwitch Header="Mute (force gate closed)"
+                                                  IsOn="{x:Bind ViewModel.Home.Muted, Mode=TwoWay}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="20"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=audio}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Audio" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="Pick your microphone, tame noise, and trim the input gain."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="Input device" Style="{StaticResource TitleText}" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{x:Bind ViewModel.Audio.Devices}"
+                                              SelectedItem="{x:Bind ViewModel.Audio.SelectedDevice, Mode=TwoWay}" />
+                                    <Button Grid.Column="1" Style="{StaticResource GhostButton}"
+                                            Content="Refresh"
+                                            Command="{x:Bind ViewModel.Audio.RefreshDevicesCommand}" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource BodyText}"
+                                           Text="{x:Bind ViewModel.Audio.ErrorMessage, Mode=OneWay}"
+                                           Foreground="{ThemeResource ErrorBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <Grid>
+                                    <TextBlock Text="Noise gate" Style="{StaticResource TitleText}" />
+                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource MetricText}"
+                                               Text="{x:Bind ViewModel.Audio.NoiseGateDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                </Grid>
+                                <Slider Minimum="-80" Maximum="-20" StepFrequency="0.5"
+                                        Value="{x:Bind ViewModel.Audio.NoiseGateDb, Mode=TwoWay}"
+                                        ToolTipService.ToolTip="Levels below this are zeroed before RMS averaging." />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <Grid>
+                                    <TextBlock Text="Input gain" Style="{StaticResource TitleText}" />
+                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource MetricText}"
+                                               Text="{x:Bind ViewModel.Audio.GainDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                </Grid>
+                                <Slider Minimum="-12" Maximum="24" StepFrequency="0.5"
+                                        Value="{x:Bind ViewModel.Audio.GainDb, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="20"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=hotkey}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Hotkey &amp; timing" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="Pick the key PushToOpen virtually holds, and shape how fast it engages and releases."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="Bound key" Style="{StaticResource TitleText}" />
+                                <Grid ColumnSpacing="14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="{ThemeResource SurfaceFloatingBrush}"
+                                            CornerRadius="10" Padding="20,14">
+                                        <TextBlock Text="{x:Bind ViewModel.Hotkey.KeyDisplay, Mode=OneWay}"
+                                                   Style="{StaticResource MetricText}" FontSize="22" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Button Style="{StaticResource AccentButton}" Content="Rebind…"
+                                                Command="{x:Bind ViewModel.Hotkey.StartCaptureCommand}"
+                                                Visibility="{x:Bind ViewModel.Hotkey.IsCapturing, Mode=OneWay, Converter={StaticResource InvBoolToVis}}" />
+                                        <TextBlock Style="{StaticResource BodyText}"
+                                                   Text="Press any key…  (Esc cancels)"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{x:Bind ViewModel.Hotkey.IsCapturing, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                        <Button Style="{StaticResource GhostButton}" Content="Cancel"
+                                                Command="{x:Bind ViewModel.Hotkey.CancelCaptureCommand}"
+                                                Visibility="{x:Bind ViewModel.Hotkey.IsCapturing, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="Engagement timing" Style="{StaticResource TitleText}" />
+                                <Grid ColumnSpacing="20" RowSpacing="14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="ATTACK" Style="{StaticResource LabelText}" />
+                                    <TextBlock Grid.Column="1" Text="RELEASE" Style="{StaticResource LabelText}" />
+                                    <TextBlock Grid.Column="2" Text="DEBOUNCE" Style="{StaticResource LabelText}" />
+
+                                    <muxc:NumberBox Grid.Row="1" Minimum="0" Maximum="500" SpinButtonPlacementMode="Inline"
+                                                    Value="{x:Bind ViewModel.Hotkey.AttackMs, Mode=TwoWay}" />
+                                    <muxc:NumberBox Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="2000" SpinButtonPlacementMode="Inline"
+                                                    Value="{x:Bind ViewModel.Hotkey.ReleaseMs, Mode=TwoWay}" />
+                                    <muxc:NumberBox Grid.Row="1" Grid.Column="2" Minimum="0" Maximum="500" SpinButtonPlacementMode="Inline"
+                                                    Value="{x:Bind ViewModel.Hotkey.DebounceMs, Mode=TwoWay}" />
+                                </Grid>
+                                <TextBlock Style="{StaticResource BodyText}"
+                                           Text="Attack = how long you must stay loud before the key engages. Release = how long quiet before it releases. Debounce = minimum time between flips." />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="20"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=overlay}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Overlay" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="A floating mic level for when the main window is out of sight."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="10">
+                                <ToggleSwitch Header="Show floating overlay"
+                                              IsOn="{x:Bind ViewModel.Overlay.ShowOverlay, Mode=TwoWay}" />
+                                <ToggleSwitch Header="Always on top"
+                                              IsOn="{x:Bind ViewModel.Overlay.AlwaysOnTop, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="20"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=prefs}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Preferences" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="Tray, startup, behavior."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="10">
+                                <ToggleSwitch Header="Minimize to tray (instead of taskbar)"
+                                              IsOn="{x:Bind ViewModel.Preferences.MinimizeToTray, Mode=TwoWay}" />
+                                <ToggleSwitch Header="Start minimized"
+                                              IsOn="{x:Bind ViewModel.Preferences.StartMinimized, Mode=TwoWay}" />
+                                <ToggleSwitch Header="Launch on Windows startup"
+                                              IsOn="{x:Bind ViewModel.Preferences.LaunchOnStartup, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+
+        <Border Grid.Row="2" Grid.ColumnSpan="2" Margin="14,0,14,12" Padding="16,8"
+                Background="{ThemeResource SurfaceFloatingBrush}"
+                BorderBrush="{ThemeResource DividerBrush}" BorderThickness="1"
+                CornerRadius="10">
+            <Grid ColumnSpacing="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Ellipse Width="8" Height="8"
+                             Fill="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}" />
+                    <TextBlock Style="{StaticResource BodyText}"
+                               Text="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateLabel}}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Style="{StaticResource BodyText}"
+                           Text="{x:Bind ViewModel.Home.DeviceName, Mode=OneWay}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Grid.Column="2" Style="{StaticResource BodyText}"
+                           Text="{x:Bind ViewModel.Hotkey.KeyDisplay, Mode=OneWay}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
