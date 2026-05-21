@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using PushToOpen.ViewModels;
 
@@ -14,5 +15,5 @@ public sealed partial class OverlayView : UserControl
 
     public OverlayViewModel ViewModel { get; }
 
-    internal Grid Root => OverlayRoot;
+    internal UIElement Root => OverlayRoot;
 }

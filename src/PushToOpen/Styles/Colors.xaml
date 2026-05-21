@@ -5,34 +5,70 @@
 
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Default">
-            <Color x:Key="SurfaceBase">#0E1014</Color>
-            <Color x:Key="SurfaceRaised">#171A21</Color>
-            <Color x:Key="SurfaceFloating">#1F232C</Color>
-            <Color x:Key="SurfaceHover">#252A35</Color>
-            <Color x:Key="DividerColor">#262A33</Color>
-            <Color x:Key="TextPrimary">#F2F4F8</Color>
-            <Color x:Key="TextSecondary">#A5ADBE</Color>
+            <Color x:Key="SurfaceBase">#0F1115</Color>
+            <Color x:Key="SurfaceRaised">#161922</Color>
+            <Color x:Key="SurfaceFloating">#1D212C</Color>
+            <Color x:Key="SurfaceHover">#252A38</Color>
+            <Color x:Key="SurfacePanel">#1A1D27</Color>
+            <Color x:Key="SurfaceElevated">#222633</Color>
+
+            <Color x:Key="DividerColor">#252938</Color>
+            <Color x:Key="DividerBright">#323849</Color>
+            <Color x:Key="RuleLine">#1C202B</Color>
+
+            <Color x:Key="TextPrimary">#F1F3F8</Color>
+            <Color x:Key="TextSecondary">#A4ACBE</Color>
             <Color x:Key="TextTertiary">#6B7385</Color>
-            <Color x:Key="AccentPrimary">#7C9CFF</Color>
-            <Color x:Key="AccentGlow">#5C7EE6</Color>
+            <Color x:Key="TextMuted">#3D4456</Color>
+
+            <Color x:Key="AccentPrimary">#7B61FF</Color>
+            <Color x:Key="AccentHover">#8E78FF</Color>
+            <Color x:Key="AccentDim">#4A3AAB</Color>
+            <Color x:Key="AccentGlow">#9B82FF</Color>
+            <Color x:Key="AccentSoft">#2A2447</Color>
+
             <Color x:Key="GateOpen">#3DDC97</Color>
+            <Color x:Key="GateOpenGlow">#5FEBAD</Color>
+            <Color x:Key="GateOpenDim">#1A6B4B</Color>
             <Color x:Key="GateClosed">#4A5266</Color>
-            <Color x:Key="WarnColor">#FFB347</Color>
+            <Color x:Key="GateClosedDim">#2A2F3D</Color>
+
+            <Color x:Key="SegSafe">#3DDC97</Color>
+            <Color x:Key="SegMid">#F5C842</Color>
+            <Color x:Key="SegHot">#FF5C7A</Color>
+            <Color x:Key="SegInactive">#1F2330</Color>
+
+            <Color x:Key="WarnColor">#F5C842</Color>
             <Color x:Key="ErrorColor">#FF5C7A</Color>
 
             <SolidColorBrush x:Key="SurfaceBaseBrush"     Color="{ThemeResource SurfaceBase}" />
             <SolidColorBrush x:Key="SurfaceRaisedBrush"   Color="{ThemeResource SurfaceRaised}" />
             <SolidColorBrush x:Key="SurfaceFloatingBrush" Color="{ThemeResource SurfaceFloating}" />
             <SolidColorBrush x:Key="SurfaceHoverBrush"    Color="{ThemeResource SurfaceHover}" />
+            <SolidColorBrush x:Key="SurfacePanelBrush"    Color="{ThemeResource SurfacePanel}" />
+            <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="{ThemeResource SurfaceElevated}" />
             <SolidColorBrush x:Key="DividerBrush"         Color="{ThemeResource DividerColor}" />
+            <SolidColorBrush x:Key="DividerBrightBrush"   Color="{ThemeResource DividerBright}" />
+            <SolidColorBrush x:Key="RuleLineBrush"        Color="{ThemeResource RuleLine}" />
             <SolidColorBrush x:Key="TextPrimaryBrush"     Color="{ThemeResource TextPrimary}" />
             <SolidColorBrush x:Key="TextSecondaryBrush"   Color="{ThemeResource TextSecondary}" />
             <SolidColorBrush x:Key="TextTertiaryBrush"    Color="{ThemeResource TextTertiary}" />
+            <SolidColorBrush x:Key="TextMutedBrush"       Color="{ThemeResource TextMuted}" />
             <SolidColorBrush x:Key="AccentPrimaryBrush"   Color="{ThemeResource AccentPrimary}" />
+            <SolidColorBrush x:Key="AccentHoverBrush"     Color="{ThemeResource AccentHover}" />
+            <SolidColorBrush x:Key="AccentDimBrush"       Color="{ThemeResource AccentDim}" />
+            <SolidColorBrush x:Key="AccentGlowBrush"      Color="{ThemeResource AccentGlow}" />
+            <SolidColorBrush x:Key="AccentSoftBrush"      Color="{ThemeResource AccentSoft}" />
             <SolidColorBrush x:Key="GateOpenBrush"        Color="{ThemeResource GateOpen}" />
+            <SolidColorBrush x:Key="GateOpenGlowBrush"    Color="{ThemeResource GateOpenGlow}" />
             <SolidColorBrush x:Key="GateClosedBrush"      Color="{ThemeResource GateClosed}" />
             <SolidColorBrush x:Key="WarnBrush"            Color="{ThemeResource WarnColor}" />
             <SolidColorBrush x:Key="ErrorBrush"           Color="{ThemeResource ErrorColor}" />
+
+            <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#7B61FF" Offset="0" />
+                <GradientStop Color="#5A8FFF" Offset="1" />
+            </LinearGradientBrush>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 

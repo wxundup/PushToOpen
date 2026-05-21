@@ -18,6 +18,8 @@
             <conv:GateLabelConverter x:Key="GateLabel" />
             <conv:FormatDbConverter x:Key="FormatDb" />
             <conv:SectionEqualsConverter x:Key="SectionEq" />
+            <conv:LockGlyphConverter x:Key="LockGlyph" />
+            <conv:LockBrushConverter x:Key="LockBrush" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

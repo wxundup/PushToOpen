@@ -30,6 +30,7 @@ public sealed partial class MainWindow : Window
         appWindow.Title = "PushToOpen";
         appWindow.Resize(new SizeInt32(1080, 720));
         appWindow.Closing += OnAppWindowClosing;
+        try { appWindow.SetIcon("Assets/VMic.ico"); } catch { }
 
         SetCornerPreference(hwnd, DWMWCP_ROUND);
     }
@@ -43,7 +44,15 @@ public sealed partial class MainWindow : Window
         {
             args.Cancel = true;
             HideToTray();
+            return;
         }
+        // Real close — tear everything down so process terminates.
+        _suppressClose = true;
+        try { TrayIcon?.Dispose(); } catch { }
+        try { App.Current.HideOverlay(); } catch { }
+        try { App.Services.GetService<IInputSimulator>()?.Release(); } catch { }
+        try { App.Services.GetService<IInputSimulator>()?.Dispose(); } catch { }
+        Environment.Exit(0);
     }
 
     public void HideToTray()
@@ -55,7 +64,12 @@ public sealed partial class MainWindow : Window
     private void ShowFromTray()
     {
         var hwnd = WindowNative.GetWindowHandle(this);
+        ShowWindow(hwnd, SW_RESTORE);
         ShowWindow(hwnd, SW_SHOW);
+        var id = Win32Interop.GetWindowIdFromWindow(hwnd);
+        var appWindow = AppWindow.GetFromWindowId(id);
+        try { appWindow.Show(); } catch { }
+        try { appWindow.MoveInZOrderAtTop(); } catch { }
         SetForegroundWindow(hwnd);
     }
 
@@ -64,9 +78,15 @@ public sealed partial class MainWindow : Window
     private void OnTrayExit(object sender, RoutedEventArgs e)
     {
         _suppressClose = true;
-        TrayIcon?.Dispose();
-        App.Services.GetService<IInputSimulator>()?.Release();
-        App.Current.Exit();
+        try { TrayIcon?.Dispose(); } catch { }
+        var settings = App.Services.GetService<ISettingsService>();
+        if (settings is not null && App.Current._overlaySettingsHandler is not null)
+            settings.SettingsChanged -= App.Current._overlaySettingsHandler;
+        try { App.Current.HideOverlay(); } catch { }
+        try { App.Services.GetService<IInputSimulator>()?.Release(); } catch { }
+        try { App.Services.GetService<IInputSimulator>()?.Dispose(); } catch { }
+        // App.Exit() is unreliable when secondary windows exist; force-terminate.
+        Environment.Exit(0);
     }
 
     private void OnTrayPreset(object sender, RoutedEventArgs e)
@@ -81,6 +101,7 @@ public sealed partial class MainWindow : Window
 
     private const int SW_HIDE = 0;
     private const int SW_SHOW = 5;
+    private const int SW_RESTORE = 9;
     private const uint DWMWA_WINDOW_CORNER_PREFERENCE = 33;
     private const uint DWMWCP_ROUND = 2;
 

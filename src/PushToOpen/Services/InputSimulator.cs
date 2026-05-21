@@ -41,8 +41,8 @@ public sealed class InputSimulator : IInputSimulator
 
     private void ReleaseInternal()
     {
-        SendKey(false);
-        _down = false;
+        if (SendKey(false)) _down = false;
+        // on SendInput failure _down stays true so next Release() retries
     }
 
     public void Dispose()

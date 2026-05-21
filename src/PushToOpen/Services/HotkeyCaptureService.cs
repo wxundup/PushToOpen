@@ -111,6 +111,7 @@ public sealed class HotkeyCaptureService : IHotkeyCaptureService
     {
         if (_keyboardHook != IntPtr.Zero) { UnhookWindowsHookEx(_keyboardHook); _keyboardHook = IntPtr.Zero; }
         if (_mouseHook    != IntPtr.Zero) { UnhookWindowsHookEx(_mouseHook);    _mouseHook = IntPtr.Zero; }
+        // safe to null after UnhookWindowsHookEx — WinAPI will not re-enter the callback after unhook returns
         _keyboardProc = null;
         _mouseProc = null;
     }

@@ -13,6 +13,7 @@ public sealed class SettingsService : ISettingsService, IAsyncDisposable
 
     private readonly string _path;
     private readonly SemaphoreSlim _ioLock = new(1, 1);
+    private readonly object _mutateLock = new();
     private readonly System.Threading.Timer _debounceTimer;
     private AppSettings _current = new();
     private volatile bool _pendingSave;
@@ -80,8 +81,13 @@ public sealed class SettingsService : ISettingsService, IAsyncDisposable
 
     public void Mutate(Action<AppSettings> mutate)
     {
-        mutate(_current);
-        SettingsChanged?.Invoke(this, _current);
+        AppSettings snapshot;
+        lock (_mutateLock)
+        {
+            mutate(_current);
+            snapshot = _current;
+        }
+        SettingsChanged?.Invoke(this, snapshot);
         if (!_loaded) return;
         _pendingSave = true;
         _debounceTimer.Change(400, Timeout.Infinite);
@@ -91,7 +97,15 @@ public sealed class SettingsService : ISettingsService, IAsyncDisposable
     {
         if (!_pendingSave) return;
         _pendingSave = false;
-        try { await SaveAsync().ConfigureAwait(false); } catch { /* swallow; next mutate retries */ }
+        try
+        {
+            await SaveAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("[SettingsService] save failed: " + ex.Message);
+            _pendingSave = true;
+        }
     }
 
     public async ValueTask DisposeAsync()

@@ -9,6 +9,7 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
     private readonly IInputSimulator _input;
     private readonly ISettingsService _settings;
     private bool _wired;
+    private static bool _exitHandlersRegistered;
 
     public PushToTalkCoordinator(
         IAudioCaptureService audio,
@@ -30,9 +31,14 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
             _engine.GateOpened += OnGateOpened;
             _engine.GateClosed += OnGateClosed;
             _settings.SettingsChanged += OnSettingsChanged;
+            _wired = true;
+        }
+
+        if (!_exitHandlersRegistered)
+        {
+            _exitHandlersRegistered = true;
             AppDomain.CurrentDomain.ProcessExit += (_, _) => SafeRelease();
             AppDomain.CurrentDomain.UnhandledException += (_, _) => SafeRelease();
-            _wired = true;
         }
 
         ApplySettings(_settings.Current);

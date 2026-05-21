@@ -34,6 +34,8 @@ public sealed class AppSettings
 
     public bool OverlayAlwaysOnTop { get; set; } = true;
 
+    public bool OverlayLocked { get; set; }
+
     public double OverlayX { get; set; } = double.NaN;
 
     public double OverlayY { get; set; } = double.NaN;

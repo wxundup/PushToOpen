@@ -14,6 +14,7 @@ public partial class App : Application
 
     public MainWindow? MainWindow { get; private set; }
     public OverlayWindow? OverlayWindow { get; private set; }
+    internal EventHandler<PushToOpen.Models.AppSettings>? _overlaySettingsHandler;
 
     public App()
     {
@@ -67,7 +68,7 @@ public partial class App : Application
             ShowOverlay();
         }
 
-        settings.SettingsChanged += (_, s) =>
+        _overlaySettingsHandler = (_, s) =>
         {
             DispatcherHelper.Post(() =>
             {
@@ -75,6 +76,7 @@ public partial class App : Application
                 else if (!s.ShowOverlay && OverlayWindow is not null) HideOverlay();
             });
         };
+        settings.SettingsChanged += _overlaySettingsHandler;
     }
 
     public void ShowOverlay()
@@ -101,7 +103,6 @@ public partial class App : Application
         services.AddSingleton<IInputSimulator, InputSimulator>();
         services.AddSingleton<IHotkeyCaptureService, HotkeyCaptureService>();
         services.AddSingleton<IStartupService, StartupService>();
-        services.AddSingleton<ITrayService, TrayService>();
         services.AddSingleton<PushToTalkCoordinator>();
 
         services.AddSingleton<HomeViewModel>();

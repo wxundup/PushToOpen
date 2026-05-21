@@ -111,14 +111,22 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
         return Task.CompletedTask;
     }
 
-    public void SetGainDb(double db) => _gainLinear = AppSettings.DbToLinear(db);
+    public void SetGainDb(double db) { lock (_gate) _gainLinear = AppSettings.DbToLinear(db); }
 
-    public void SetNoiseGateDb(double db) => _gateLinear = AppSettings.DbToLinear(db);
+    public void SetNoiseGateDb(double db) { lock (_gate) _gateLinear = AppSettings.DbToLinear(db); }
 
     private void OnRecordingStopped(object? sender, StoppedEventArgs e)
     {
-        if (e.Exception is not null)
-            CaptureError?.Invoke(this, e.Exception.Message);
+        if (e.Exception is null) return;
+        CaptureError?.Invoke(this, e.Exception.Message);
+        // device disconnected mid-capture — attempt rebind to default after a short delay
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(1500).ConfigureAwait(false);
+            bool shouldRestart;
+            lock (_gate) { shouldRestart = !_disposed && _capture is null; }
+            if (shouldRestart) await StartAsync(null).ConfigureAwait(false);
+        });
     }
 
     private void OnDataAvailable(object? sender, WaveInEventArgs e)
@@ -135,6 +143,9 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
         if (frameSize == 0) return;
         var frameCount = e.BytesRecorded / frameSize;
         if (frameCount == 0) return;
+
+        double gainLinear, gateLinear;
+        lock (_gate) { gainLinear = _gainLinear; gateLinear = _gateLinear; }
 
         double sumSq = 0;
         double peak = 0;
@@ -158,14 +169,14 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
                 sampleSum += s;
             }
             double mono = sampleSum / channels;
-            mono *= _gainLinear;
+            mono *= gainLinear;
             double abs = Math.Abs(mono);
             if (abs > peak) peak = abs;
             sumSq += mono * mono;
         }
 
         double rms = Math.Sqrt(sumSq / frameCount);
-        if (rms < _gateLinear) rms = 0;
+        if (rms < gateLinear) rms = 0;
 
         const double rmsAttack = 0.35;
         const double rmsRelease = 0.12;
@@ -204,9 +215,9 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
         try { _enumerator.Dispose(); } catch { }
     }
 
-    void IMMNotificationClient.OnDeviceStateChanged(string deviceId, DeviceState newState) => _ = RefreshDevicesAsync();
-    void IMMNotificationClient.OnDeviceAdded(string pwstrDeviceId) => _ = RefreshDevicesAsync();
-    void IMMNotificationClient.OnDeviceRemoved(string deviceId) => _ = RefreshDevicesAsync();
-    void IMMNotificationClient.OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId) => _ = RefreshDevicesAsync();
+    void IMMNotificationClient.OnDeviceStateChanged(string deviceId, DeviceState newState) => _ = Task.Run(RefreshDevicesAsync);
+    void IMMNotificationClient.OnDeviceAdded(string pwstrDeviceId) => _ = Task.Run(RefreshDevicesAsync);
+    void IMMNotificationClient.OnDeviceRemoved(string deviceId) => _ = Task.Run(RefreshDevicesAsync);
+    void IMMNotificationClient.OnDefaultDeviceChanged(DataFlow flow, Role role, string defaultDeviceId) => _ = Task.Run(RefreshDevicesAsync);
     void IMMNotificationClient.OnPropertyValueChanged(string pwstrDeviceId, PropertyKey key) { }
 }

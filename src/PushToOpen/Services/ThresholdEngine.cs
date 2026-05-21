@@ -16,6 +16,12 @@ public sealed class ThresholdEngine : IThresholdEngine
     private DateTime _lastTransitionAt;
     private GateState _state = GateState.Closed;
 
+    public ThresholdEngine()
+    {
+        // seed so debounce check doesn't skip on the very first gate event
+        _lastTransitionAt = DateTime.UtcNow - TimeSpan.FromSeconds(10);
+    }
+
     public GateState State => _state;
 
     public event EventHandler? GateOpened;

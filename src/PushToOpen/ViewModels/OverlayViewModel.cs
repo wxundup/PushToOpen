@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PushToOpen.Models;
 using PushToOpen.Services;
 using PushToOpen.Utilities;
@@ -25,7 +26,9 @@ public sealed partial class OverlayViewModel : ObservableObject, IDisposable
 
     [ObservableProperty] private bool showOverlay;
     [ObservableProperty] private bool alwaysOnTop = true;
+    [ObservableProperty] private bool isLocked;
     [ObservableProperty] private double rmsNormalized;
+    [ObservableProperty] private double rmsDb = double.NegativeInfinity;
     [ObservableProperty] private double thresholdNormalized;
     [ObservableProperty] private bool isGateOpen;
 
@@ -41,9 +44,19 @@ public sealed partial class OverlayViewModel : ObservableObject, IDisposable
         _settings.Mutate(s => s.OverlayAlwaysOnTop = value);
     }
 
+    partial void OnIsLockedChanged(bool value)
+    {
+        if (_suppress) return;
+        _settings.Mutate(s => s.OverlayLocked = value);
+    }
+
+    [RelayCommand]
+    private void ToggleLock() => IsLocked = !IsLocked;
+
     private void OnLevel(object? sender, AudioLevel level) => DispatcherHelper.Post(() =>
     {
         RmsNormalized = Norm(level.RmsDb);
+        RmsDb = level.RmsDb;
     });
 
     private void OnGate(object? sender, GateState s) => DispatcherHelper.Post(() => IsGateOpen = s == GateState.Open);
@@ -55,6 +68,7 @@ public sealed partial class OverlayViewModel : ObservableObject, IDisposable
         _suppress = true;
         ShowOverlay = s.ShowOverlay;
         AlwaysOnTop = s.OverlayAlwaysOnTop;
+        IsLocked = s.OverlayLocked;
         ThresholdNormalized = Norm(s.ThresholdDb);
         _suppress = false;
     }

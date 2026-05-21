@@ -11,7 +11,7 @@
         <views:MainShellView x:Name="Shell" />
         <tray:TaskbarIcon x:Name="TrayIcon"
                           ToolTipText="PushToOpen"
-                          IconSource="ms-appx:///Assets/tray.ico"
+                          IconSource="ms-appx:///Assets/VMic.ico"
                           NoLeftClickDelay="True"
                           LeftClickCommand="{x:Bind ShowFromTrayCommand}">
             <tray:TaskbarIcon.ContextFlyout>

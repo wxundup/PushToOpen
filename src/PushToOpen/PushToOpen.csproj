@@ -16,7 +16,7 @@
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <SelfContained>true</SelfContained>
-    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\VMic.ico</ApplicationIcon>
     <AssemblyName>PushToOpen</AssemblyName>
     <Version>1.0.0</Version>
   </PropertyGroup>

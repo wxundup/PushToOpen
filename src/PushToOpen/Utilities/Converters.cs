@@ -60,3 +60,24 @@ public sealed class SectionEqualsConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language)
         => value is bool b && b ? (parameter as string ?? string.Empty) : DependencyProperty.UnsetValue;
 }
+
+public sealed class LockGlyphConverter : IValueConverter
+{
+    // Segoe Fluent Icons: E72E = Lock, E785 = Unlock
+    private const string LockGlyph = "";
+    private const string UnlockGlyph = "";
+    public object Convert(object value, Type targetType, object parameter, string language)
+        => value is bool b && b ? LockGlyph : UnlockGlyph;
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}
+
+public sealed class LockBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        bool locked = value is bool b && b;
+        var key = locked ? "AccentPrimaryBrush" : "TextTertiaryBrush";
+        return Application.Current.Resources[key];
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}

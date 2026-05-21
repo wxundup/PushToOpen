@@ -8,31 +8,35 @@
     xmlns:ctrl="using:PushToOpen.Controls"
     xmlns:conv="using:PushToOpen.Utilities">
 
-    <Grid x:Name="RootGrid" Background="#0E1014">
+    <Grid x:Name="RootGrid" Background="{ThemeResource SurfaceBaseBrush}">
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="44" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="240" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="AppTitleBar" Grid.ColumnSpan="2" Height="44" Background="Transparent">
-            <StackPanel Orientation="Horizontal" Margin="20,0" VerticalAlignment="Center" Spacing="10">
-                <Ellipse Width="10" Height="10" Fill="{ThemeResource AccentPrimaryBrush}" />
-                <TextBlock Text="PushToOpen" FontWeight="SemiBold" Foreground="{ThemeResource TextPrimaryBrush}" />
-                <TextBlock Text="voice-activated push-to-talk"
-                           Style="{StaticResource BodyText}" Opacity="0.6" Margin="6,0,0,0" />
+        <!-- Title bar -->
+        <Grid x:Name="AppTitleBar" Grid.ColumnSpan="2" Background="Transparent">
+            <StackPanel Orientation="Horizontal" Margin="20,0" VerticalAlignment="Center" Spacing="12">
+                <Image Source="ms-appx:///Assets/VMic.ico" Width="22" Height="22" />
+                <TextBlock Text="PushToOpen"
+                           FontFamily="Segoe UI Variable Display"
+                           FontSize="14" FontWeight="SemiBold"
+                           Foreground="{ThemeResource TextPrimaryBrush}"
+                           VerticalAlignment="Center" />
             </StackPanel>
         </Grid>
 
-        <Border Grid.Row="1" Grid.Column="0" Margin="14,4,7,14"
+        <!-- Sidebar -->
+        <Border Grid.Row="1" Grid.Column="0"
                 Background="{ThemeResource SurfaceRaisedBrush}"
-                BorderBrush="{ThemeResource DividerBrush}" BorderThickness="1"
-                CornerRadius="14">
+                BorderBrush="{ThemeResource DividerBrush}"
+                BorderThickness="0,1,1,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -40,85 +44,186 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <StackPanel Margin="16,16,16,8" Spacing="2">
-                    <TextBlock Text="WORKSPACE" Style="{StaticResource LabelText}" />
-                    <TextBlock Text="{x:Bind ViewModel.Home.DeviceName, Mode=OneWay}"
-                               Style="{StaticResource BodyText}" TextTrimming="CharacterEllipsis" />
+                <!-- Workspace identity -->
+                <Border Margin="14,14,14,10" Padding="14,12"
+                        Background="{ThemeResource SurfaceFloatingBrush}"
+                        BorderBrush="{ThemeResource DividerBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="INPUT DEVICE" Style="{StaticResource LabelText}" />
+                        <TextBlock Text="{x:Bind ViewModel.Home.DeviceName, Mode=OneWay}"
+                                   FontFamily="Segoe UI Variable Text"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   Foreground="{ThemeResource TextPrimaryBrush}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Nav items -->
+                <StackPanel Grid.Row="1" Margin="10,4,10,0" Spacing="3">
+                    <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=home}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE9F5;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Live" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=audio}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE720;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Audio" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=hotkey}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE92E;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Hotkey" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=overlay}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE7C4;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Overlay" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=prefs}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE713;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Preferences" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
                 </StackPanel>
 
-                <StackPanel Grid.Row="1" Margin="10" Spacing="4">
-                    <ToggleButton Style="{StaticResource NavButton}" Content="◉  Live"
-                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=home}" />
-                    <ToggleButton Style="{StaticResource NavButton}" Content="≋  Audio"
-                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=audio}" />
-                    <ToggleButton Style="{StaticResource NavButton}" Content="⌨  Hotkey &amp; timing"
-                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=hotkey}" />
-                    <ToggleButton Style="{StaticResource NavButton}" Content="◰  Overlay"
-                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=overlay}" />
-                    <ToggleButton Style="{StaticResource NavButton}" Content="✦  Preferences"
-                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=prefs}" />
-                </StackPanel>
-
-                <Border Grid.Row="2" Margin="14" Padding="14" CornerRadius="10"
-                        Background="{ThemeResource SurfaceFloatingBrush}">
-                    <StackPanel Spacing="6">
-                        <TextBlock Text="GATE" Style="{StaticResource LabelText}" />
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <Ellipse Width="10" Height="10"
-                                     Fill="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}" />
+                <!-- Status panel -->
+                <Border Grid.Row="2"
+                        Margin="14,0,14,14" Padding="14,12"
+                        Background="{ThemeResource SurfaceFloatingBrush}"
+                        BorderBrush="{ThemeResource DividerBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="STATUS" Style="{StaticResource LabelText}" />
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Width="10" Height="10" CornerRadius="5"
+                                    Background="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}"
+                                    VerticalAlignment="Center" />
                             <TextBlock Text="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateLabel}}"
-                                       Style="{StaticResource MetricText}" />
+                                       FontFamily="Cascadia Mono, Consolas"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="KEY" Style="{StaticResource LabelText}" VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.Hotkey.KeyDisplay, Mode=OneWay}"
+                                       FontFamily="Cascadia Mono, Consolas"
+                                       Foreground="{ThemeResource AccentPrimaryBrush}"
+                                       FontSize="12" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
             </Grid>
         </Border>
 
-        <Border Grid.Row="1" Grid.Column="1" Margin="7,4,14,14"
-                Background="{ThemeResource SurfaceRaisedBrush}"
-                BorderBrush="{ThemeResource DividerBrush}" BorderThickness="1"
-                CornerRadius="14">
-            <ScrollViewer Padding="32">
+        <!-- Content area -->
+        <Border Grid.Row="1" Grid.Column="1"
+                Background="{ThemeResource SurfaceBaseBrush}"
+                BorderBrush="{ThemeResource DividerBrush}"
+                BorderThickness="0,1,0,0">
+            <ScrollViewer Padding="36,28,36,32" VerticalScrollBarVisibility="Auto">
                 <Grid>
-                    <StackPanel Spacing="20"
+
+                    <!-- LIVE -->
+                    <StackPanel Spacing="22"
                                 Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=home}">
-                        <StackPanel Spacing="6">
-                            <TextBlock Text="Live" Style="{StaticResource DisplayLargeText}" />
-                            <TextBlock Text="Watch your mic, adjust the gate, and verify push-to-talk fires when you actually speak."
-                                       Style="{StaticResource BodyText}" />
-                        </StackPanel>
+                        <Grid>
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Live monitor" Style="{StaticResource DisplayLargeText}" />
+                                <TextBlock Text="Real-time microphone level, gate state, and threshold calibration."
+                                           Style="{StaticResource BodyText}" />
+                            </StackPanel>
+                            <Border HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Padding="12,7" CornerRadius="20"
+                                    Background="{ThemeResource SurfaceFloatingBrush}"
+                                    BorderBrush="{ThemeResource DividerBrush}"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Border Width="8" Height="8" CornerRadius="4"
+                                            Background="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}"
+                                            VerticalAlignment="Center" />
+                                    <TextBlock Text="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateLabel}}"
+                                               FontFamily="Segoe UI Variable Text"
+                                               FontSize="12" FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
 
                         <Border Style="{StaticResource Card}">
-                            <StackPanel Spacing="14">
+                            <StackPanel Spacing="20">
                                 <Grid>
-                                    <TextBlock Text="Microphone level" Style="{StaticResource TitleText}" />
-                                    <TextBlock HorizontalAlignment="Right"
-                                               Style="{StaticResource MetricText}"
-                                               Text="{x:Bind ViewModel.Home.RmsDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="MIC LEVEL" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{x:Bind ViewModel.Home.RmsDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                                                   Style="{StaticResource BigMetricText}" />
+                                    </StackPanel>
+                                    <StackPanel HorizontalAlignment="Right" Spacing="3">
+                                        <TextBlock Text="PEAK" Style="{StaticResource LabelText}" HorizontalAlignment="Right" />
+                                        <TextBlock Text="{x:Bind ViewModel.Home.PeakDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                                                   Style="{StaticResource MetricText}"
+                                                   FontSize="16"
+                                                   Foreground="{ThemeResource TextSecondaryBrush}"
+                                                   HorizontalAlignment="Right" />
+                                    </StackPanel>
                                 </Grid>
+
                                 <ctrl:VuMeter Level="{x:Bind ViewModel.Home.RmsNormalized, Mode=OneWay}"
                                               Threshold="{x:Bind ViewModel.Home.ThresholdNormalized, Mode=OneWay}"
                                               IsActive="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay}" />
-                                <Grid>
-                                    <TextBlock Text="Peak" Style="{StaticResource LabelText}" />
-                                    <TextBlock HorizontalAlignment="Right"
-                                               Style="{StaticResource MetricText}"
-                                               Text="{x:Bind ViewModel.Home.PeakDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+
+                                <Grid Margin="0,-6,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="-60" Style="{StaticResource LabelText}" Opacity="0.5" />
+                                    <TextBlock Grid.Column="1" Text="-45" Style="{StaticResource LabelText}" Opacity="0.5" />
+                                    <TextBlock Grid.Column="2" Text="-30" Style="{StaticResource LabelText}" Opacity="0.5" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Column="3" Text="-15" Style="{StaticResource LabelText}" Opacity="0.5" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Column="4" Text="0" Style="{StaticResource LabelText}" Opacity="0.5" HorizontalAlignment="Right" />
                                 </Grid>
                             </StackPanel>
                         </Border>
 
                         <Border Style="{StaticResource Card}">
-                            <StackPanel Spacing="14">
+                            <StackPanel Spacing="16">
                                 <Grid>
-                                    <TextBlock Text="Threshold" Style="{StaticResource TitleText}" />
-                                    <TextBlock HorizontalAlignment="Right"
-                                               Style="{StaticResource MetricText}"
-                                               Text="{x:Bind ViewModel.Home.ThresholdDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="THRESHOLD" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="Mic level required to engage push-to-talk"
+                                                   Style="{StaticResource BodyText}" FontSize="12" />
+                                    </StackPanel>
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Text="{x:Bind ViewModel.Home.ThresholdDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                                               Style="{StaticResource BigMetricText}"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}" />
                                 </Grid>
                                 <Slider Minimum="-60" Maximum="0" StepFrequency="0.5"
-                                        Value="{x:Bind ViewModel.Home.ThresholdDb, Mode=TwoWay}"
-                                        ToolTipService.ToolTip="The mic must exceed this level to engage push-to-talk." />
+                                        Value="{x:Bind ViewModel.Home.ThresholdDb, Mode=TwoWay}" />
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <Button Style="{StaticResource GhostButton}" Content="Whisper"
                                             Command="{x:Bind ViewModel.Home.ApplyPresetCommand}" CommandParameter="whisper" />
@@ -132,37 +237,62 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource Card}">
-                            <Grid ColumnSpacing="24">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Spacing="6">
-                                    <TextBlock Text="DETECTION" Style="{StaticResource LabelText}" />
-                                    <ToggleSwitch Header="Enable threshold detection"
-                                                  IsOn="{x:Bind ViewModel.Home.Enabled, Mode=TwoWay}" />
+                        <Grid ColumnSpacing="14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource Card}">
+                                <StackPanel Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                   Text="&#xE9F5;" FontSize="14"
+                                                   Foreground="{ThemeResource AccentPrimaryBrush}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="Detection" Style="{StaticResource TitleText}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Continuously monitor mic level and trigger the key."
+                                               Style="{StaticResource BodyText}" FontSize="12" />
+                                    <ToggleSwitch IsOn="{x:Bind ViewModel.Home.Enabled, Mode=TwoWay}"
+                                                  OffContent="Disabled" OnContent="Enabled" />
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" Spacing="6">
-                                    <TextBlock Text="MUTE" Style="{StaticResource LabelText}" />
-                                    <ToggleSwitch Header="Mute (force gate closed)"
-                                                  IsOn="{x:Bind ViewModel.Home.Muted, Mode=TwoWay}" />
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource Card}">
+                                <StackPanel Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                   Text="&#xE74F;" FontSize="14"
+                                                   Foreground="{ThemeResource AccentPrimaryBrush}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="Mute" Style="{StaticResource TitleText}" />
+                                    </StackPanel>
+                                    <TextBlock Text="Force the gate closed regardless of mic level."
+                                               Style="{StaticResource BodyText}" FontSize="12" />
+                                    <ToggleSwitch IsOn="{x:Bind ViewModel.Home.Muted, Mode=TwoWay}"
+                                                  OffContent="Live" OnContent="Muted" />
                                 </StackPanel>
-                            </Grid>
-                        </Border>
+                            </Border>
+                        </Grid>
                     </StackPanel>
 
-                    <StackPanel Spacing="20"
+                    <!-- AUDIO -->
+                    <StackPanel Spacing="22"
                                 Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=audio}">
                         <StackPanel Spacing="6">
                             <TextBlock Text="Audio" Style="{StaticResource DisplayLargeText}" />
-                            <TextBlock Text="Pick your microphone, tame noise, and trim the input gain."
+                            <TextBlock Text="Pick an input device, set the noise floor, and trim gain."
                                        Style="{StaticResource BodyText}" />
                         </StackPanel>
 
                         <Border Style="{StaticResource Card}">
                             <StackPanel Spacing="14">
-                                <TextBlock Text="Input device" Style="{StaticResource TitleText}" />
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE720;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Input device" Style="{StaticResource TitleText}" />
+                                </StackPanel>
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -184,22 +314,33 @@
                         <Border Style="{StaticResource Card}">
                             <StackPanel Spacing="14">
                                 <Grid>
-                                    <TextBlock Text="Noise gate" Style="{StaticResource TitleText}" />
-                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource MetricText}"
-                                               Text="{x:Bind ViewModel.Audio.NoiseGateDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="NOISE GATE FLOOR" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="Levels below this are zeroed before RMS averaging."
+                                                   Style="{StaticResource BodyText}" FontSize="12" />
+                                    </StackPanel>
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Text="{x:Bind ViewModel.Audio.NoiseGateDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                                               Style="{StaticResource BigMetricText}"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}" />
                                 </Grid>
                                 <Slider Minimum="-80" Maximum="-20" StepFrequency="0.5"
-                                        Value="{x:Bind ViewModel.Audio.NoiseGateDb, Mode=TwoWay}"
-                                        ToolTipService.ToolTip="Levels below this are zeroed before RMS averaging." />
+                                        Value="{x:Bind ViewModel.Audio.NoiseGateDb, Mode=TwoWay}" />
                             </StackPanel>
                         </Border>
 
                         <Border Style="{StaticResource Card}">
                             <StackPanel Spacing="14">
                                 <Grid>
-                                    <TextBlock Text="Input gain" Style="{StaticResource TitleText}" />
-                                    <TextBlock HorizontalAlignment="Right" Style="{StaticResource MetricText}"
-                                               Text="{x:Bind ViewModel.Audio.GainDb, Mode=OneWay, Converter={StaticResource FormatDb}}" />
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="INPUT GAIN" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="Boost or attenuate the mic signal before measurement."
+                                                   Style="{StaticResource BodyText}" FontSize="12" />
+                                    </StackPanel>
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Text="{x:Bind ViewModel.Audio.GainDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                                               Style="{StaticResource BigMetricText}"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}" />
                                 </Grid>
                                 <Slider Minimum="-12" Maximum="24" StepFrequency="0.5"
                                         Value="{x:Bind ViewModel.Audio.GainDb, Mode=TwoWay}" />
@@ -207,28 +348,39 @@
                         </Border>
                     </StackPanel>
 
-                    <StackPanel Spacing="20"
+                    <!-- HOTKEY -->
+                    <StackPanel Spacing="22"
                                 Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=hotkey}">
                         <StackPanel Spacing="6">
                             <TextBlock Text="Hotkey &amp; timing" Style="{StaticResource DisplayLargeText}" />
-                            <TextBlock Text="Pick the key PushToOpen virtually holds, and shape how fast it engages and releases."
+                            <TextBlock Text="Set the key PushToOpen holds and tune attack / release envelope."
                                        Style="{StaticResource BodyText}" />
                         </StackPanel>
 
                         <Border Style="{StaticResource Card}">
-                            <StackPanel Spacing="14">
-                                <TextBlock Text="Bound key" Style="{StaticResource TitleText}" />
+                            <StackPanel Spacing="16">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE92E;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Bound key" Style="{StaticResource TitleText}" />
+                                </StackPanel>
                                 <Grid ColumnSpacing="14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Border Background="{ThemeResource SurfaceFloatingBrush}"
-                                            CornerRadius="10" Padding="20,14">
+                                    <Border Background="{ThemeResource SurfacePanelBrush}"
+                                            BorderBrush="{ThemeResource DividerBrightBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="10" Padding="22,16">
                                         <TextBlock Text="{x:Bind ViewModel.Hotkey.KeyDisplay, Mode=OneWay}"
-                                                   Style="{StaticResource MetricText}" FontSize="22" />
+                                                   FontFamily="Cascadia Mono, Consolas"
+                                                   FontSize="22" FontWeight="SemiBold"
+                                                   Foreground="{ThemeResource TextPrimaryBrush}" />
                                     </Border>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                         <Button Style="{StaticResource AccentButton}" Content="Rebind…"
                                                 Command="{x:Bind ViewModel.Hotkey.StartCaptureCommand}"
                                                 Visibility="{x:Bind ViewModel.Hotkey.IsCapturing, Mode=OneWay, Converter={StaticResource InvBoolToVis}}" />
@@ -245,9 +397,15 @@
                         </Border>
 
                         <Border Style="{StaticResource Card}">
-                            <StackPanel Spacing="14">
-                                <TextBlock Text="Engagement timing" Style="{StaticResource TitleText}" />
-                                <Grid ColumnSpacing="20" RowSpacing="14">
+                            <StackPanel Spacing="18">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE916;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Envelope timing" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <Grid ColumnSpacing="16" RowSpacing="12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
@@ -258,50 +416,57 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Text="ATTACK" Style="{StaticResource LabelText}" />
-                                    <TextBlock Grid.Column="1" Text="RELEASE" Style="{StaticResource LabelText}" />
-                                    <TextBlock Grid.Column="2" Text="DEBOUNCE" Style="{StaticResource LabelText}" />
+                                    <TextBlock Text="Attack (ms)" Style="{StaticResource LabelText}" />
+                                    <TextBlock Grid.Column="1" Text="Release (ms)" Style="{StaticResource LabelText}" />
+                                    <TextBlock Grid.Column="2" Text="Debounce (ms)" Style="{StaticResource LabelText}" />
 
-                                    <muxc:NumberBox Grid.Row="1" Minimum="0" Maximum="500" SpinButtonPlacementMode="Inline"
+                                    <muxc:NumberBox Grid.Row="1" Minimum="0" Maximum="500"
+                                                    SpinButtonPlacementMode="Inline"
                                                     Value="{x:Bind ViewModel.Hotkey.AttackMs, Mode=TwoWay}" />
-                                    <muxc:NumberBox Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="2000" SpinButtonPlacementMode="Inline"
+                                    <muxc:NumberBox Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="2000"
+                                                    SpinButtonPlacementMode="Inline"
                                                     Value="{x:Bind ViewModel.Hotkey.ReleaseMs, Mode=TwoWay}" />
-                                    <muxc:NumberBox Grid.Row="1" Grid.Column="2" Minimum="0" Maximum="500" SpinButtonPlacementMode="Inline"
+                                    <muxc:NumberBox Grid.Row="1" Grid.Column="2" Minimum="0" Maximum="500"
+                                                    SpinButtonPlacementMode="Inline"
                                                     Value="{x:Bind ViewModel.Hotkey.DebounceMs, Mode=TwoWay}" />
                                 </Grid>
-                                <TextBlock Style="{StaticResource BodyText}"
-                                           Text="Attack = how long you must stay loud before the key engages. Release = how long quiet before it releases. Debounce = minimum time between flips." />
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Attack — mic must stay above threshold this long before the key engages. Release — must stay below for this long before key releases. Debounce — minimum interval between state flips." />
                             </StackPanel>
                         </Border>
                     </StackPanel>
 
-                    <StackPanel Spacing="20"
+                    <!-- OVERLAY -->
+                    <StackPanel Spacing="22"
                                 Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=overlay}">
                         <StackPanel Spacing="6">
                             <TextBlock Text="Overlay" Style="{StaticResource DisplayLargeText}" />
-                            <TextBlock Text="A floating mic level for when the main window is out of sight."
+                            <TextBlock Text="Compact floating monitor — keeps mic level visible while the main window is minimized."
                                        Style="{StaticResource BodyText}" />
                         </StackPanel>
                         <Border Style="{StaticResource Card}">
-                            <StackPanel Spacing="10">
+                            <StackPanel Spacing="14">
                                 <ToggleSwitch Header="Show floating overlay"
                                               IsOn="{x:Bind ViewModel.Overlay.ShowOverlay, Mode=TwoWay}" />
                                 <ToggleSwitch Header="Always on top"
                                               IsOn="{x:Bind ViewModel.Overlay.AlwaysOnTop, Mode=TwoWay}" />
+                                <ToggleSwitch Header="Lock position (prevents dragging)"
+                                              IsOn="{x:Bind ViewModel.Overlay.IsLocked, Mode=TwoWay}" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
 
-                    <StackPanel Spacing="20"
+                    <!-- PREFS -->
+                    <StackPanel Spacing="22"
                                 Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=prefs}">
                         <StackPanel Spacing="6">
                             <TextBlock Text="Preferences" Style="{StaticResource DisplayLargeText}" />
-                            <TextBlock Text="Tray, startup, behavior."
+                            <TextBlock Text="System integration and startup behavior."
                                        Style="{StaticResource BodyText}" />
                         </StackPanel>
                         <Border Style="{StaticResource Card}">
-                            <StackPanel Spacing="10">
-                                <ToggleSwitch Header="Minimize to tray (instead of taskbar)"
+                            <StackPanel Spacing="14">
+                                <ToggleSwitch Header="Minimize to system tray (not taskbar)"
                                               IsOn="{x:Bind ViewModel.Preferences.MinimizeToTray, Mode=TwoWay}" />
                                 <ToggleSwitch Header="Start minimized"
                                               IsOn="{x:Bind ViewModel.Preferences.StartMinimized, Mode=TwoWay}" />
@@ -310,32 +475,58 @@
                             </StackPanel>
                         </Border>
                     </StackPanel>
+
                 </Grid>
             </ScrollViewer>
         </Border>
 
-        <Border Grid.Row="2" Grid.ColumnSpan="2" Margin="14,0,14,12" Padding="16,8"
-                Background="{ThemeResource SurfaceFloatingBrush}"
-                BorderBrush="{ThemeResource DividerBrush}" BorderThickness="1"
-                CornerRadius="10">
+        <!-- Status bar -->
+        <Border Grid.Row="2" Grid.ColumnSpan="2"
+                Background="{ThemeResource SurfaceRaisedBrush}"
+                BorderBrush="{ThemeResource DividerBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="20,9">
             <Grid ColumnSpacing="20">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+
                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Ellipse Width="8" Height="8"
-                             Fill="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}" />
-                    <TextBlock Style="{StaticResource BodyText}"
-                               Text="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateLabel}}" />
+                    <Border Width="7" Height="7" CornerRadius="3.5"
+                            Background="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateBrush}}"
+                            VerticalAlignment="Center" />
+                    <TextBlock FontFamily="Segoe UI Variable Small" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{ThemeResource TextSecondaryBrush}"
+                               Text="{x:Bind ViewModel.Home.IsGateOpen, Mode=OneWay, Converter={StaticResource GateLabel}}"
+                               VerticalAlignment="Center" />
                 </StackPanel>
-                <TextBlock Grid.Column="1" Style="{StaticResource BodyText}"
+
+                <TextBlock Grid.Column="1"
+                           FontFamily="Segoe UI Variable Small" FontSize="11"
+                           Foreground="{ThemeResource TextTertiaryBrush}"
                            Text="{x:Bind ViewModel.Home.DeviceName, Mode=OneWay}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Grid.Column="2" Style="{StaticResource BodyText}"
-                           Text="{x:Bind ViewModel.Hotkey.KeyDisplay, Mode=OneWay}" />
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           MaxWidth="320" />
+
+                <TextBlock Grid.Column="2" HorizontalAlignment="Center"
+                           FontFamily="Cascadia Mono, Consolas" FontSize="11"
+                           Foreground="{ThemeResource TextTertiaryBrush}"
+                           Text="{x:Bind ViewModel.Home.RmsDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                           VerticalAlignment="Center" />
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock Text="KEY" Style="{StaticResource LabelText}" VerticalAlignment="Center" />
+                    <TextBlock FontFamily="Cascadia Mono, Consolas" FontSize="11" FontWeight="SemiBold"
+                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                               Text="{x:Bind ViewModel.Hotkey.KeyDisplay, Mode=OneWay}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
             </Grid>
         </Border>
+
     </Grid>
 </UserControl>
