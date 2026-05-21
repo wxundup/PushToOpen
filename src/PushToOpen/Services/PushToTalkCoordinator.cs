@@ -58,6 +58,9 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
         _engine.SetMuted(s.Muted);
         _audio.SetGainDb(s.GainDb);
         _audio.SetNoiseGateDb(s.NoiseGateDb);
+        _audio.SetMonitorGainDb(s.MonitorGainDb);
+        _audio.SetMonitorEnabled(s.MonitorEnabled);
+        _audio.SetNoiseSuppression(s.NoiseSuppressionEnabled, s.NoiseSuppressionStrength);
         _input.Bind(s.Hotkey);
     }
 

@@ -20,6 +20,8 @@
             <conv:SectionEqualsConverter x:Key="SectionEq" />
             <conv:LockGlyphConverter x:Key="LockGlyph" />
             <conv:LockBrushConverter x:Key="LockBrush" />
+            <conv:MicGlyphConverter x:Key="MicGlyph" />
+            <conv:MicBrushConverter x:Key="MicBrush" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

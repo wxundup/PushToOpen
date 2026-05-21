@@ -27,6 +27,7 @@ public sealed partial class OverlayViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool showOverlay;
     [ObservableProperty] private bool alwaysOnTop = true;
     [ObservableProperty] private bool isLocked;
+    [ObservableProperty] private bool isMuted;
     [ObservableProperty] private double rmsNormalized;
     [ObservableProperty] private double rmsDb = double.NegativeInfinity;
     [ObservableProperty] private double thresholdNormalized;
@@ -69,6 +70,7 @@ public sealed partial class OverlayViewModel : ObservableObject, IDisposable
         ShowOverlay = s.ShowOverlay;
         AlwaysOnTop = s.OverlayAlwaysOnTop;
         IsLocked = s.OverlayLocked;
+        IsMuted = s.Muted;
         ThresholdNormalized = Norm(s.ThresholdDb);
         _suppress = false;
     }

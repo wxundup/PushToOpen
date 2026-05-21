@@ -28,6 +28,13 @@
                                VerticalAlignment="Center" />
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <!-- Mic mute glyph: E720 = mic, E74F = mic-off -->
+                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                               Text="{x:Bind ViewModel.IsMuted, Mode=OneWay, Converter={StaticResource MicGlyph}}"
+                               Foreground="{x:Bind ViewModel.IsMuted, Mode=OneWay, Converter={StaticResource MicBrush}}"
+                               FontSize="14"
+                               VerticalAlignment="Center"
+                               ToolTipService.ToolTip="Microphone state" />
                     <Border Padding="7,3" CornerRadius="10"
                             Background="{ThemeResource SurfacePanelBrush}">
                         <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">

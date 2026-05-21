@@ -27,4 +27,10 @@ public interface IAudioCaptureService : IAsyncDisposable
     void SetGainDb(double db);
 
     void SetNoiseGateDb(double db);
+
+    void SetMonitorEnabled(bool enabled);
+
+    void SetMonitorGainDb(double db);
+
+    void SetNoiseSuppression(bool enabled, double strength);
 }

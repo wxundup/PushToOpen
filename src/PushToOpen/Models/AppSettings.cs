@@ -42,6 +42,16 @@ public sealed class AppSettings
 
     public KeyBindingInfo Hotkey { get; set; } = KeyBindingInfo.DefaultPushToTalk;
 
+    public KeyBindingInfo? MuteToggleHotkey { get; set; }
+
+    public bool MonitorEnabled { get; set; }
+
+    public double MonitorGainDb { get; set; } = -6.0;
+
+    public bool NoiseSuppressionEnabled { get; set; }
+
+    public double NoiseSuppressionStrength { get; set; } = 0.7;
+
     [JsonIgnore]
     public double ThresholdLinear => DbToLinear(ThresholdDb);
 

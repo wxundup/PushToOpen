@@ -17,16 +17,24 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
     private double _rmsSmoothed;
     private bool _disposed;
 
+    // Monitor (hear-yourself)
+    private WasapiOut? _monitorOut;
+    private BufferedWaveProvider? _monitorBuffer;
+    private bool _monitorEnabled;
+    private double _monitorGainLinear = AppSettings.DbToLinear(-6.0);
+
+    // Noise suppression
+    private NoiseSuppressor? _suppressor;
+    private bool _suppressionEnabled;
+
     public AudioCaptureService()
     {
-        try { _enumerator.RegisterEndpointNotificationCallback(this); } catch { /* enumerator notifications best-effort */ }
+        try { _enumerator.RegisterEndpointNotificationCallback(this); } catch { }
         Devices = Array.Empty<AudioDeviceInfo>();
     }
 
     public IReadOnlyList<AudioDeviceInfo> Devices { get; private set; }
-
     public AudioDeviceInfo? CurrentDevice { get; private set; }
-
     public bool IsCapturing { get; private set; }
 
     public event EventHandler<AudioLevel>? LevelMeasured;
@@ -42,7 +50,7 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
             using var def = _enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications);
             defaultId = def.ID;
         }
-        catch { /* may be unavailable */ }
+        catch { }
 
         foreach (var dev in _enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active))
         {
@@ -79,7 +87,10 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
                 _capture.RecordingStopped += OnRecordingStopped;
                 _capture.StartRecording();
                 IsCapturing = true;
+                _suppressor?.Reset();
             }
+
+            if (_monitorEnabled) TryStartMonitor();
         }
         catch (Exception ex)
         {
@@ -108,18 +119,84 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
             try { toDispose.Dispose(); } catch { }
         }
         device?.Dispose();
+        StopMonitor();
         return Task.CompletedTask;
     }
 
     public void SetGainDb(double db) { lock (_gate) _gainLinear = AppSettings.DbToLinear(db); }
-
     public void SetNoiseGateDb(double db) { lock (_gate) _gateLinear = AppSettings.DbToLinear(db); }
+    public void SetMonitorGainDb(double db) { lock (_gate) _monitorGainLinear = AppSettings.DbToLinear(db); }
+
+    public void SetMonitorEnabled(bool enabled)
+    {
+        lock (_gate) _monitorEnabled = enabled;
+        if (enabled) TryStartMonitor();
+        else StopMonitor();
+    }
+
+    public void SetNoiseSuppression(bool enabled, double strength)
+    {
+        lock (_gate)
+        {
+            _suppressionEnabled = enabled;
+            if (enabled)
+            {
+                _suppressor ??= new NoiseSuppressor();
+                _suppressor.SetStrength(strength);
+            }
+        }
+    }
+
+    private void TryStartMonitor()
+    {
+        WaveFormat? fmt;
+        lock (_gate) fmt = _capture?.WaveFormat;
+        if (fmt is null) return;
+        try
+        {
+            // Mono float monitor format keeps DSP path simple; resample if needed.
+            var monitorFmt = WaveFormat.CreateIeeeFloatWaveFormat(fmt.SampleRate, 1);
+            var buffer = new BufferedWaveProvider(monitorFmt)
+            {
+                BufferDuration = TimeSpan.FromMilliseconds(400),
+                DiscardOnBufferOverflow = true,
+            };
+            var output = new WasapiOut(AudioClientShareMode.Shared, 30);
+            output.Init(buffer);
+            output.Play();
+            lock (_gate)
+            {
+                _monitorBuffer = buffer;
+                _monitorOut = output;
+            }
+        }
+        catch (Exception ex)
+        {
+            CaptureError?.Invoke(this, "Monitor failed: " + ex.Message);
+            StopMonitor();
+        }
+    }
+
+    private void StopMonitor()
+    {
+        WasapiOut? out_;
+        lock (_gate)
+        {
+            out_ = _monitorOut;
+            _monitorOut = null;
+            _monitorBuffer = null;
+        }
+        if (out_ is not null)
+        {
+            try { out_.Stop(); } catch { }
+            try { out_.Dispose(); } catch { }
+        }
+    }
 
     private void OnRecordingStopped(object? sender, StoppedEventArgs e)
     {
         if (e.Exception is null) return;
         CaptureError?.Invoke(this, e.Exception.Message);
-        // device disconnected mid-capture — attempt rebind to default after a short delay
         _ = Task.Run(async () =>
         {
             await Task.Delay(1500).ConfigureAwait(false);
@@ -144,9 +221,23 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
         var frameCount = e.BytesRecorded / frameSize;
         if (frameCount == 0) return;
 
-        double gainLinear, gateLinear;
-        lock (_gate) { gainLinear = _gainLinear; gateLinear = _gateLinear; }
+        double gainLinear, gateLinear, monitorGain;
+        bool monitorOn, suppressOn;
+        NoiseSuppressor? suppressor;
+        BufferedWaveProvider? monitorBuf;
+        lock (_gate)
+        {
+            gainLinear = _gainLinear;
+            gateLinear = _gateLinear;
+            monitorGain = _monitorGainLinear;
+            monitorOn = _monitorEnabled;
+            suppressOn = _suppressionEnabled;
+            suppressor = _suppressor;
+            monitorBuf = _monitorBuffer;
+        }
 
+        // Downmix → mono float array (gain applied).
+        var mono = new float[frameCount];
         double sumSq = 0;
         double peak = 0;
         var data = e.Buffer;
@@ -168,11 +259,24 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
                     };
                 sampleSum += s;
             }
-            double mono = sampleSum / channels;
-            mono *= gainLinear;
-            double abs = Math.Abs(mono);
+            double m = (sampleSum / channels) * gainLinear;
+            mono[i] = (float)m;
+        }
+
+        // Optional noise suppression (in-place).
+        if (suppressOn && suppressor is not null)
+        {
+            suppressor.Process(mono);
+        }
+
+        // Compute RMS/peak from the *post-suppression* signal (so meter reflects
+        // what downstream apps will see).
+        for (int i = 0; i < frameCount; i++)
+        {
+            double s = mono[i];
+            double abs = Math.Abs(s);
             if (abs > peak) peak = abs;
-            sumSq += mono * mono;
+            sumSq += s * s;
         }
 
         double rms = Math.Sqrt(sumSq / frameCount);
@@ -197,6 +301,18 @@ public sealed class AudioCaptureService : IAudioCaptureService, IMMNotificationC
             PeakDb: AppSettings.LinearToDb(_peakSmoothed),
             Timestamp: DateTime.UtcNow);
         LevelMeasured?.Invoke(this, level);
+
+        // Monitor: scale by monitor gain, write float samples to output buffer.
+        if (monitorOn && monitorBuf is not null)
+        {
+            var bytes = new byte[frameCount * 4];
+            for (int i = 0; i < frameCount; i++)
+            {
+                float v = (float)Math.Clamp(mono[i] * monitorGain, -1.0, 1.0);
+                BitConverter.GetBytes(v).CopyTo(bytes, i * 4);
+            }
+            try { monitorBuf.AddSamples(bytes, 0, bytes.Length); } catch { }
+        }
     }
 
     private static int Read24(byte[] buf, int idx)

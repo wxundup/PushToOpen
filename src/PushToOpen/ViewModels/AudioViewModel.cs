@@ -32,6 +32,10 @@ public sealed partial class AudioViewModel : ObservableObject, IDisposable
     [ObservableProperty] private double gainDb = 0;
     [ObservableProperty] private int pollIntervalMs = 10;
     [ObservableProperty] private string? errorMessage;
+    [ObservableProperty] private bool monitorEnabled;
+    [ObservableProperty] private double monitorGainDb = -6;
+    [ObservableProperty] private bool noiseSuppressionEnabled;
+    [ObservableProperty] private double noiseSuppressionStrength = 0.7;
 
     partial void OnSelectedDeviceChanged(AudioDeviceInfo? value)
     {
@@ -50,6 +54,30 @@ public sealed partial class AudioViewModel : ObservableObject, IDisposable
     {
         if (_suppress) return;
         _settings.Mutate(s => s.GainDb = value);
+    }
+
+    partial void OnMonitorEnabledChanged(bool value)
+    {
+        if (_suppress) return;
+        _settings.Mutate(s => s.MonitorEnabled = value);
+    }
+
+    partial void OnMonitorGainDbChanged(double value)
+    {
+        if (_suppress) return;
+        _settings.Mutate(s => s.MonitorGainDb = value);
+    }
+
+    partial void OnNoiseSuppressionEnabledChanged(bool value)
+    {
+        if (_suppress) return;
+        _settings.Mutate(s => s.NoiseSuppressionEnabled = value);
+    }
+
+    partial void OnNoiseSuppressionStrengthChanged(double value)
+    {
+        if (_suppress) return;
+        _settings.Mutate(s => s.NoiseSuppressionStrength = value);
     }
 
     [RelayCommand]
@@ -79,6 +107,10 @@ public sealed partial class AudioViewModel : ObservableObject, IDisposable
         NoiseGateDb = s.NoiseGateDb;
         GainDb = s.GainDb;
         PollIntervalMs = s.PollIntervalMs;
+        MonitorEnabled = s.MonitorEnabled;
+        MonitorGainDb = s.MonitorGainDb;
+        NoiseSuppressionEnabled = s.NoiseSuppressionEnabled;
+        NoiseSuppressionStrength = s.NoiseSuppressionStrength;
         _suppress = false;
     }
 

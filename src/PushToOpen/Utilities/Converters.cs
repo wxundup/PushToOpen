@@ -81,3 +81,24 @@ public sealed class LockBrushConverter : IValueConverter
     }
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
 }
+
+public sealed class MicGlyphConverter : IValueConverter
+{
+    // Segoe Fluent Icons: E720 = Microphone, E74F = Mute
+    private const string MicOn = "";
+    private const string MicOff = "";
+    public object Convert(object value, Type targetType, object parameter, string language)
+        => value is bool b && b ? MicOff : MicOn;
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}
+
+public sealed class MicBrushConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        bool muted = value is bool b && b;
+        var key = muted ? "ErrorBrush" : "TextSecondaryBrush";
+        return Application.Current.Resources[key];
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}

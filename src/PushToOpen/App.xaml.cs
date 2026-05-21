@@ -77,6 +77,16 @@ public partial class App : Application
             });
         };
         settings.SettingsChanged += _overlaySettingsHandler;
+
+        // Global mute-toggle hotkey: listen for the bound key + flip s.Muted.
+        var muteListener = Services.GetRequiredService<IGlobalHotkeyListener>();
+        muteListener.SetBinding(settings.Current.MuteToggleHotkey);
+        muteListener.Triggered += (_, _) =>
+        {
+            settings.Mutate(s => s.Muted = !s.Muted);
+        };
+        muteListener.Start();
+        settings.SettingsChanged += (_, s) => muteListener.SetBinding(s.MuteToggleHotkey);
     }
 
     public void ShowOverlay()
@@ -102,6 +112,7 @@ public partial class App : Application
         services.AddSingleton<IThresholdEngine, ThresholdEngine>();
         services.AddSingleton<IInputSimulator, InputSimulator>();
         services.AddSingleton<IHotkeyCaptureService, HotkeyCaptureService>();
+        services.AddSingleton<IGlobalHotkeyListener, GlobalHotkeyListener>();
         services.AddSingleton<IStartupService, StartupService>();
         services.AddSingleton<PushToTalkCoordinator>();
 

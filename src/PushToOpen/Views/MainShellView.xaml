@@ -346,6 +346,60 @@
                                         Value="{x:Bind ViewModel.Audio.GainDb, Mode=TwoWay}" />
                             </StackPanel>
                         </Border>
+
+                        <!-- Hear yourself (monitor) -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE7F6;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Hear yourself" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Plays your mic back through your default output. Use HEADPHONES — speakers will cause feedback. Lets you hear what the noise suppression is doing." />
+                                <ToggleSwitch Header="Enable mic monitoring"
+                                              IsOn="{x:Bind ViewModel.Audio.MonitorEnabled, Mode=TwoWay}"
+                                              OffContent="Off" OnContent="Listening" />
+                                <Grid>
+                                    <TextBlock Text="MONITOR LEVEL" Style="{StaticResource LabelText}" VerticalAlignment="Center" />
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Text="{x:Bind ViewModel.Audio.MonitorGainDb, Mode=OneWay, Converter={StaticResource FormatDb}}"
+                                               Style="{StaticResource MetricText}"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}" />
+                                </Grid>
+                                <Slider Minimum="-30" Maximum="6" StepFrequency="0.5"
+                                        Value="{x:Bind ViewModel.Audio.MonitorGainDb, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Noise suppression -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE9CE;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Voice noise suppression" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Spectral noise reduction (FFT-based). Removes steady-state hiss, fan and room tone from the THRESHOLD detection + the Hear-yourself monitor — apps like Discord still receive your raw mic. For system-wide neural NS, use Discord's built-in Krisp or NVIDIA Broadcast." />
+                                <ToggleSwitch Header="Enable noise suppression"
+                                              IsOn="{x:Bind ViewModel.Audio.NoiseSuppressionEnabled, Mode=TwoWay}"
+                                              OffContent="Off" OnContent="Active" />
+                                <Grid>
+                                    <TextBlock Text="STRENGTH" Style="{StaticResource LabelText}" VerticalAlignment="Center" />
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Text="{x:Bind ViewModel.Audio.NoiseSuppressionStrength, Mode=OneWay}"
+                                               Style="{StaticResource MetricText}"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}" />
+                                </Grid>
+                                <Slider Minimum="0" Maximum="1" StepFrequency="0.05"
+                                        Value="{x:Bind ViewModel.Audio.NoiseSuppressionStrength, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
 
                     <!-- HOTKEY -->
@@ -391,6 +445,50 @@
                                         <Button Style="{StaticResource GhostButton}" Content="Cancel"
                                                 Command="{x:Bind ViewModel.Hotkey.CancelCaptureCommand}"
                                                 Visibility="{x:Bind ViewModel.Hotkey.IsCapturing, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="16">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE74F;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Mute toggle hotkey" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Bind a global key that flips Mute on/off without opening the app. Works while any window is focused." />
+                                <Grid ColumnSpacing="14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="{ThemeResource SurfacePanelBrush}"
+                                            BorderBrush="{ThemeResource DividerBrightBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="10" Padding="22,16">
+                                        <TextBlock Text="{x:Bind ViewModel.Hotkey.MuteToggleKeyDisplay, Mode=OneWay}"
+                                                   FontFamily="Cascadia Mono, Consolas"
+                                                   FontSize="18" FontWeight="SemiBold"
+                                                   Foreground="{ThemeResource TextPrimaryBrush}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                        <Button Style="{StaticResource AccentButton}" Content="Bind…"
+                                                Command="{x:Bind ViewModel.Hotkey.StartCaptureMuteToggleCommand}"
+                                                Visibility="{x:Bind ViewModel.Hotkey.IsCapturingMuteToggle, Mode=OneWay, Converter={StaticResource InvBoolToVis}}" />
+                                        <Button Style="{StaticResource GhostButton}" Content="Clear"
+                                                Command="{x:Bind ViewModel.Hotkey.ClearMuteToggleCommand}"
+                                                Visibility="{x:Bind ViewModel.Hotkey.IsCapturingMuteToggle, Mode=OneWay, Converter={StaticResource InvBoolToVis}}" />
+                                        <TextBlock Style="{StaticResource BodyText}"
+                                                   Text="Press any key…  (Esc cancels)"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{x:Bind ViewModel.Hotkey.IsCapturingMuteToggle, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
+                                        <Button Style="{StaticResource GhostButton}" Content="Cancel"
+                                                Command="{x:Bind ViewModel.Hotkey.CancelCaptureCommand}"
+                                                Visibility="{x:Bind ViewModel.Hotkey.IsCapturingMuteToggle, Mode=OneWay, Converter={StaticResource BoolToVis}}" />
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
