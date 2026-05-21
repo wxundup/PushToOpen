@@ -11,3 +11,4 @@ dist/
 *.pdb
 TestResults/
 .idea/
+*.zip
