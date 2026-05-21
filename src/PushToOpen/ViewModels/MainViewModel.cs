@@ -9,6 +9,7 @@ public sealed partial class MainViewModel : ObservableObject
     public AudioViewModel Audio { get; }
     public HotkeyViewModel Hotkey { get; }
     public OverlayViewModel Overlay { get; }
+    public WindowViewModel Window { get; }
     public AppPreferencesViewModel Preferences { get; }
 
     public MainViewModel(
@@ -16,12 +17,14 @@ public sealed partial class MainViewModel : ObservableObject
         AudioViewModel audio,
         HotkeyViewModel hotkey,
         OverlayViewModel overlay,
+        WindowViewModel window,
         AppPreferencesViewModel preferences)
     {
         Home = home;
         Audio = audio;
         Hotkey = hotkey;
         Overlay = overlay;
+        Window = window;
         Preferences = preferences;
     }
 

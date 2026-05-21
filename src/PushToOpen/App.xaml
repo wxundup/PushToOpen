@@ -22,6 +22,7 @@
             <conv:LockBrushConverter x:Key="LockBrush" />
             <conv:MicGlyphConverter x:Key="MicGlyph" />
             <conv:MicBrushConverter x:Key="MicBrush" />
+            <conv:AllowLabelConverter x:Key="AllowLabel" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

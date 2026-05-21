@@ -12,6 +12,8 @@ public interface IThresholdEngine
 
     void SetEnabled(bool enabled);
     void SetMuted(bool muted);
+    /// <summary>External gate — false forces the engine inactive (used by window-restriction).</summary>
+    void SetAppGate(bool allowed);
     void SetThresholdDb(double db);
     void SetAttackMs(int ms);
     void SetReleaseMs(int ms);

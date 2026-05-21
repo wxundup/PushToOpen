@@ -8,6 +8,7 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
     private readonly IThresholdEngine _engine;
     private readonly IInputSimulator _input;
     private readonly ISettingsService _settings;
+    private readonly IForegroundWatcher _foreground;
     private bool _wired;
     private static bool _exitHandlersRegistered;
 
@@ -15,12 +16,14 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
         IAudioCaptureService audio,
         IThresholdEngine engine,
         IInputSimulator input,
-        ISettingsService settings)
+        ISettingsService settings,
+        IForegroundWatcher foreground)
     {
         _audio = audio;
         _engine = engine;
         _input = input;
         _settings = settings;
+        _foreground = foreground;
     }
 
     public async Task StartAsync()
@@ -31,6 +34,8 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
             _engine.GateOpened += OnGateOpened;
             _engine.GateClosed += OnGateClosed;
             _settings.SettingsChanged += OnSettingsChanged;
+            _foreground.ForegroundChanged += OnForegroundChanged;
+            _foreground.Start();
             _wired = true;
         }
 
@@ -42,11 +47,21 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
         }
 
         ApplySettings(_settings.Current);
+        ApplyAppGate(_settings.Current, _foreground.ForegroundProcessName);
         await _audio.RefreshDevicesAsync().ConfigureAwait(false);
         await _audio.StartAsync(_settings.Current.InputDeviceId).ConfigureAwait(false);
     }
 
-    private void OnSettingsChanged(object? sender, AppSettings s) => ApplySettings(s);
+    private void OnSettingsChanged(object? sender, AppSettings s)
+    {
+        ApplySettings(s);
+        ApplyAppGate(s, _foreground.ForegroundProcessName);
+    }
+
+    private void OnForegroundChanged(object? sender, string? processName)
+    {
+        ApplyAppGate(_settings.Current, processName);
+    }
 
     private void ApplySettings(AppSettings s)
     {
@@ -62,6 +77,14 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
         _audio.SetMonitorEnabled(s.MonitorEnabled);
         _audio.SetNoiseSuppression(s.NoiseSuppressionEnabled, s.NoiseSuppressionStrength);
         _input.Bind(s.Hotkey);
+    }
+
+    private void ApplyAppGate(AppSettings s, string? foreground)
+    {
+        var target = s.RestrictToProcessName;
+        bool allowed = string.IsNullOrEmpty(target)
+            || (foreground is not null && string.Equals(foreground, target, StringComparison.OrdinalIgnoreCase));
+        _engine.SetAppGate(allowed);
     }
 
     private void OnLevel(object? sender, AudioLevel level) => _engine.Feed(level);
@@ -82,6 +105,8 @@ public sealed class PushToTalkCoordinator : IAsyncDisposable
             _engine.GateOpened -= OnGateOpened;
             _engine.GateClosed -= OnGateClosed;
             _settings.SettingsChanged -= OnSettingsChanged;
+            _foreground.ForegroundChanged -= OnForegroundChanged;
+            _foreground.Stop();
         }
         SafeRelease();
         await _audio.StopAsync().ConfigureAwait(false);

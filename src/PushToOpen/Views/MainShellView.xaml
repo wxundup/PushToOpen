@@ -95,6 +95,14 @@
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=window}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE737;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Window" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButton}"
                                   IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=prefs}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
@@ -550,6 +558,102 @@
                                               IsOn="{x:Bind ViewModel.Overlay.AlwaysOnTop, Mode=TwoWay}" />
                                 <ToggleSwitch Header="Lock position (prevents dragging)"
                                               IsOn="{x:Bind ViewModel.Overlay.IsLocked, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- WINDOW -->
+                    <StackPanel Spacing="22"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=window}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Window restriction" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="Limit PushToOpen so it only triggers while a specific app owns focus. When another window is in front, the gate stays closed and your bound key never fires."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="16">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE737;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Target application" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+
+                                <ToggleSwitch Header="Restrict to one app"
+                                              IsOn="{x:Bind ViewModel.Window.RestrictionEnabled, Mode=TwoWay}"
+                                              OffContent="Active in any app" OnContent="Restricted" />
+
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              PlaceholderText="Pick an open window…"
+                                              ItemsSource="{x:Bind ViewModel.Window.Windows}"
+                                              SelectedItem="{x:Bind ViewModel.Window.SelectedWindow, Mode=TwoWay}" />
+                                    <Button Grid.Column="1" Style="{StaticResource GhostButton}"
+                                            Content="Refresh"
+                                            Command="{x:Bind ViewModel.Window.RefreshCommand}" />
+                                    <Button Grid.Column="2" Style="{StaticResource GhostButton}"
+                                            Content="Clear"
+                                            Command="{x:Bind ViewModel.Window.ClearTargetCommand}" />
+                                </Grid>
+
+                                <Grid>
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Text="CURRENT TARGET" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{x:Bind ViewModel.Window.TargetDisplayName, Mode=OneWay}"
+                                                   FontFamily="Segoe UI Variable Text"
+                                                   FontSize="14" FontWeight="SemiBold"
+                                                   Foreground="{ThemeResource TextPrimaryBrush}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE7C4;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Live status" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <Grid ColumnSpacing="14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="FOCUSED PROCESS" Style="{StaticResource LabelText}" />
+                                        <TextBlock Text="{x:Bind ViewModel.Window.CurrentForeground, Mode=OneWay}"
+                                                   FontFamily="Cascadia Mono, Consolas"
+                                                   FontSize="13"
+                                                   Foreground="{ThemeResource TextPrimaryBrush}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="4">
+                                        <TextBlock Text="ENGINE GATE" Style="{StaticResource LabelText}" />
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Width="10" Height="10" CornerRadius="5"
+                                                    Background="{x:Bind ViewModel.Window.CurrentlyAllowed, Mode=OneWay, Converter={StaticResource GateBrush}}"
+                                                    VerticalAlignment="Center" />
+                                            <TextBlock Text="{x:Bind ViewModel.Window.CurrentlyAllowed, Mode=OneWay, Converter={StaticResource AllowLabel}}"
+                                                       FontFamily="Cascadia Mono, Consolas"
+                                                       FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="{ThemeResource TextPrimaryBrush}"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Tip: if the app you want isn't in the list, focus it once then click Refresh." />
                             </StackPanel>
                         </Border>
                     </StackPanel>

@@ -11,6 +11,7 @@ public sealed class ThresholdEngine : IThresholdEngine
     private int _debounceMs = 40;
     private bool _enabled = true;
     private bool _muted;
+    private bool _appGate = true;
     private DateTime _firstAboveAt;
     private DateTime _firstBelowAt;
     private DateTime _lastTransitionAt;
@@ -40,6 +41,12 @@ public sealed class ThresholdEngine : IThresholdEngine
         if (muted) ForceClose();
     }
 
+    public void SetAppGate(bool allowed)
+    {
+        lock (_gate) _appGate = allowed;
+        if (!allowed) ForceClose();
+    }
+
     public void SetThresholdDb(double db) { lock (_gate) _thresholdLinear = AppSettings.DbToLinear(db); }
     public void SetAttackMs(int ms)  { lock (_gate) _attackMs  = Math.Max(0, ms); }
     public void SetReleaseMs(int ms) { lock (_gate) _releaseMs = Math.Max(0, ms); }
@@ -50,7 +57,7 @@ public sealed class ThresholdEngine : IThresholdEngine
         bool open = false, close = false;
         lock (_gate)
         {
-            if (!_enabled || _muted)
+            if (!_enabled || _muted || !_appGate)
             {
                 if (_state == GateState.Open) { _state = GateState.Closed; close = true; }
             }

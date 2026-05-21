@@ -114,12 +114,15 @@ public partial class App : Application
         services.AddSingleton<IHotkeyCaptureService, HotkeyCaptureService>();
         services.AddSingleton<IGlobalHotkeyListener, GlobalHotkeyListener>();
         services.AddSingleton<IStartupService, StartupService>();
+        services.AddSingleton<IForegroundWatcher, ForegroundWatcher>();
+        services.AddSingleton<IWindowEnumerator, WindowEnumerator>();
         services.AddSingleton<PushToTalkCoordinator>();
 
         services.AddSingleton<HomeViewModel>();
         services.AddSingleton<AudioViewModel>();
         services.AddSingleton<HotkeyViewModel>();
         services.AddSingleton<OverlayViewModel>();
+        services.AddSingleton<WindowViewModel>();
         services.AddSingleton<AppPreferencesViewModel>();
         services.AddSingleton<MainViewModel>();
 

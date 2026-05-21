@@ -34,6 +34,13 @@ public sealed class GateLabelConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
 }
 
+public sealed class AllowLabelConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+        => value is bool b && b ? "ENABLED" : "PAUSED";
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}
+
 public sealed class FormatDbConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)

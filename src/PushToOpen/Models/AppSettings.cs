@@ -52,6 +52,14 @@ public sealed class AppSettings
 
     public double NoiseSuppressionStrength { get; set; } = 0.7;
 
+    /// <summary>
+    /// When non-null, PushToOpen only fires when this process owns the foreground window.
+    /// Match is case-insensitive on executable name (e.g. "discord.exe"). Null = always on.
+    /// </summary>
+    public string? RestrictToProcessName { get; set; }
+
+    public string? RestrictToProcessDisplayName { get; set; }
+
     [JsonIgnore]
     public double ThresholdLinear => DbToLinear(ThresholdDb);
 
