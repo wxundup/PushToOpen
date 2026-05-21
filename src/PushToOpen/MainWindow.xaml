@@ -16,16 +16,16 @@
                           LeftClickCommand="{x:Bind ShowFromTrayCommand}">
             <tray:TaskbarIcon.ContextFlyout>
                 <MenuFlyout>
-                    <MenuFlyoutItem Text="Open PushToOpen" Click="OnTrayShow" />
+                    <MenuFlyoutItem Text="Open PushToOpen" Command="{x:Bind ShowFromTrayCommand}" />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutSubItem Text="Threshold preset">
-                        <MenuFlyoutItem Text="Whisper  (-50 dB)" Click="OnTrayPreset" Tag="-50" />
-                        <MenuFlyoutItem Text="Soft  (-42 dB)"    Click="OnTrayPreset" Tag="-42" />
-                        <MenuFlyoutItem Text="Normal  (-34 dB)"  Click="OnTrayPreset" Tag="-34" />
-                        <MenuFlyoutItem Text="Loud  (-24 dB)"    Click="OnTrayPreset" Tag="-24" />
+                        <MenuFlyoutItem Text="Whisper  (-50 dB)" Command="{x:Bind PresetCommand}" CommandParameter="-50" />
+                        <MenuFlyoutItem Text="Soft  (-42 dB)"    Command="{x:Bind PresetCommand}" CommandParameter="-42" />
+                        <MenuFlyoutItem Text="Normal  (-34 dB)"  Command="{x:Bind PresetCommand}" CommandParameter="-34" />
+                        <MenuFlyoutItem Text="Loud  (-24 dB)"    Command="{x:Bind PresetCommand}" CommandParameter="-24" />
                     </MenuFlyoutSubItem>
                     <MenuFlyoutSeparator />
-                    <MenuFlyoutItem Text="Exit" Click="OnTrayExit" />
+                    <MenuFlyoutItem Text="Exit" Command="{x:Bind ExitCommand}" />
                 </MenuFlyout>
             </tray:TaskbarIcon.ContextFlyout>
         </tray:TaskbarIcon>

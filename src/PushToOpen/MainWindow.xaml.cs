@@ -20,6 +20,8 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         _settings = App.Services.GetRequiredService<ISettingsService>();
         ShowFromTrayCommand = new RelayCommand(ShowFromTray);
+        ExitCommand = new RelayCommand(ExitApplication);
+        PresetCommand = new RelayCommand<string>(ApplyPreset);
 
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(Shell.TitleBarRegion);
@@ -36,6 +38,8 @@ public sealed partial class MainWindow : Window
     }
 
     public RelayCommand ShowFromTrayCommand { get; }
+    public RelayCommand ExitCommand { get; }
+    public RelayCommand<string> PresetCommand { get; }
 
     private void OnAppWindowClosing(AppWindow sender, AppWindowClosingEventArgs args)
     {
@@ -73,25 +77,28 @@ public sealed partial class MainWindow : Window
         SetForegroundWindow(hwnd);
     }
 
-    private void OnTrayShow(object sender, RoutedEventArgs e) => ShowFromTray();
-
-    private void OnTrayExit(object sender, RoutedEventArgs e)
+    private void ExitApplication()
     {
         _suppressClose = true;
         try { TrayIcon?.Dispose(); } catch { }
-        var settings = App.Services.GetService<ISettingsService>();
-        if (settings is not null && App.Current._overlaySettingsHandler is not null)
-            settings.SettingsChanged -= App.Current._overlaySettingsHandler;
+        try
+        {
+            var settings = App.Services.GetService<ISettingsService>();
+            if (settings is not null && App.Current._overlaySettingsHandler is not null)
+                settings.SettingsChanged -= App.Current._overlaySettingsHandler;
+        }
+        catch { }
         try { App.Current.HideOverlay(); } catch { }
         try { App.Services.GetService<IInputSimulator>()?.Release(); } catch { }
         try { App.Services.GetService<IInputSimulator>()?.Dispose(); } catch { }
-        // App.Exit() is unreliable when secondary windows exist; force-terminate.
+        // Force-terminate — App.Exit() is unreliable while secondary windows exist
+        // and Click handlers from H.NotifyIcon flyouts don't always run on UI thread.
         Environment.Exit(0);
     }
 
-    private void OnTrayPreset(object sender, RoutedEventArgs e)
+    private void ApplyPreset(string? tag)
     {
-        if (sender is FrameworkElement fe && fe.Tag is string tag
+        if (!string.IsNullOrEmpty(tag)
             && double.TryParse(tag, System.Globalization.NumberStyles.Float,
                 System.Globalization.CultureInfo.InvariantCulture, out var db))
         {

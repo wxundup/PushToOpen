@@ -16,9 +16,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutWidth}}" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+
+        <!-- Background image layer (drawn behind everything else, low opacity). -->
+        <Image x:Name="BackgroundImage"
+               Grid.RowSpan="3" Grid.ColumnSpan="2"
+               Source="{x:Bind ViewModel.Themes.BackgroundPreview, Mode=OneWay}"
+               Opacity="{x:Bind ViewModel.Themes.BackgroundOpacity, Mode=OneWay}"
+               Stretch="UniformToFill"
+               IsHitTestVisible="False" />
 
         <!-- Title bar -->
         <Grid x:Name="AppTitleBar" Grid.ColumnSpan="2" Background="Transparent">
@@ -44,12 +52,13 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- Workspace identity -->
+                <!-- Workspace identity (hidden in compact layout) -->
                 <Border Margin="14,14,14,10" Padding="14,12"
                         Background="{ThemeResource SurfaceFloatingBrush}"
                         BorderBrush="{ThemeResource DividerBrush}"
                         BorderThickness="1"
-                        CornerRadius="10">
+                        CornerRadius="10"
+                        Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}">
                     <StackPanel Spacing="4">
                         <TextBlock Text="INPUT DEVICE" Style="{StaticResource LabelText}" />
                         <TextBlock Text="{x:Bind ViewModel.Home.DeviceName, Mode=OneWay}"
@@ -67,7 +76,8 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        Text="&#xE9F5;" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="Live" VerticalAlignment="Center" />
+                            <TextBlock Text="Live" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource NavButton}"
@@ -75,7 +85,8 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        Text="&#xE720;" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="Audio" VerticalAlignment="Center" />
+                            <TextBlock Text="Audio" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource NavButton}"
@@ -83,7 +94,8 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        Text="&#xE92E;" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="Hotkey" VerticalAlignment="Center" />
+                            <TextBlock Text="Hotkey" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource NavButton}"
@@ -91,7 +103,8 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        Text="&#xE7C4;" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="Overlay" VerticalAlignment="Center" />
+                            <TextBlock Text="Overlay" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource NavButton}"
@@ -99,7 +112,17 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        Text="&#xE737;" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="Window" VerticalAlignment="Center" />
+                            <TextBlock Text="Window" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource NavButton}"
+                                  IsChecked="{x:Bind ViewModel.ActiveSection, Mode=TwoWay, Converter={StaticResource SectionEq}, ConverterParameter=themes}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       Text="&#xE790;" FontSize="14" VerticalAlignment="Center" />
+                            <TextBlock Text="Themes" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
                         </StackPanel>
                     </ToggleButton>
                     <ToggleButton Style="{StaticResource NavButton}"
@@ -107,18 +130,20 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                        Text="&#xE713;" FontSize="14" VerticalAlignment="Center" />
-                            <TextBlock Text="Preferences" VerticalAlignment="Center" />
+                            <TextBlock Text="Preferences" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}" />
                         </StackPanel>
                     </ToggleButton>
                 </StackPanel>
 
-                <!-- Status panel -->
+                <!-- Status panel (hidden in compact layout) -->
                 <Border Grid.Row="2"
                         Margin="14,0,14,14" Padding="14,12"
                         Background="{ThemeResource SurfaceFloatingBrush}"
                         BorderBrush="{ThemeResource DividerBrush}"
                         BorderThickness="1"
-                        CornerRadius="10">
+                        CornerRadius="10"
+                        Visibility="{x:Bind ViewModel.Themes.LayoutMode, Mode=OneWay, Converter={StaticResource LayoutLabelVis}}">
                     <StackPanel Spacing="10">
                         <TextBlock Text="STATUS" Style="{StaticResource LabelText}" />
                         <StackPanel Orientation="Horizontal" Spacing="10">
@@ -654,6 +679,89 @@
                                 </Grid>
                                 <TextBlock Style="{StaticResource BodyText}" FontSize="12"
                                            Text="Tip: if the app you want isn't in the list, focus it once then click Refresh." />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- THEMES -->
+                    <StackPanel Spacing="22"
+                                Visibility="{x:Bind ViewModel.ActiveSection, Mode=OneWay, Converter={StaticResource SectionEq}, ConverterParameter=themes}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Themes" Style="{StaticResource DisplayLargeText}" />
+                            <TextBlock Text="Pick a color scheme, add a translucent background image, switch layout style."
+                                       Style="{StaticResource BodyText}" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <TextBlock Text="COLOR SCHEME" Style="{StaticResource LabelText}" />
+                                <ComboBox HorizontalAlignment="Stretch"
+                                          ItemsSource="{x:Bind ViewModel.Themes.Themes}"
+                                          SelectedItem="{x:Bind ViewModel.Themes.SelectedTheme, Mode=TwoWay}"
+                                          DisplayMemberPath="Name" />
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="{x:Bind ViewModel.Themes.SelectedTheme.Description, Mode=OneWay, FallbackValue=''}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE91B;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Background image" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Pick any PNG/JPG. Drawn behind the UI at low opacity so cards stay readable. (WinUI 3 unpackaged can't do real backdrop blur — translucency only.)" />
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="{ThemeResource SurfacePanelBrush}"
+                                            BorderBrush="{ThemeResource DividerBrightBrush}"
+                                            BorderThickness="1" CornerRadius="8"
+                                            Padding="14,10">
+                                        <TextBlock Text="{x:Bind ViewModel.Themes.BackgroundImagePath, Mode=OneWay, FallbackValue='(no image)'}"
+                                                   Style="{StaticResource BodyText}" FontSize="12"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </Border>
+                                    <Button Grid.Column="1" Style="{StaticResource AccentButton}"
+                                            Content="Pick image…"
+                                            Command="{x:Bind ViewModel.Themes.PickBackgroundCommand}" />
+                                    <Button Grid.Column="2" Style="{StaticResource GhostButton}"
+                                            Content="Clear"
+                                            Command="{x:Bind ViewModel.Themes.ClearBackgroundCommand}" />
+                                </Grid>
+                                <Grid>
+                                    <TextBlock Text="OPACITY" Style="{StaticResource LabelText}" VerticalAlignment="Center" />
+                                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Text="{x:Bind ViewModel.Themes.BackgroundOpacity, Mode=OneWay}"
+                                               Style="{StaticResource MetricText}"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}" />
+                                </Grid>
+                                <Slider Minimum="0" Maximum="0.6" StepFrequency="0.02"
+                                        Value="{x:Bind ViewModel.Themes.BackgroundOpacity, Mode=TwoWay}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel Spacing="14">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                               Text="&#xE8A9;" FontSize="14"
+                                               Foreground="{ThemeResource AccentPrimaryBrush}"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="Layout" Style="{StaticResource TitleText}" />
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource BodyText}" FontSize="12"
+                                           Text="Sidebar — classic left rail with vertical nav. Compact — top tab strip, more room for content (good for narrow windows)." />
+                                <ToggleSwitch Header="Compact layout (top tabs)"
+                                              IsOn="{x:Bind ViewModel.Themes.IsCompactLayout, Mode=TwoWay}"
+                                              OffContent="Sidebar" OnContent="Compact" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

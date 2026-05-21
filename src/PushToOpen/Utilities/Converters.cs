@@ -41,6 +41,31 @@ public sealed class AllowLabelConverter : IValueConverter
     public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
 }
 
+public sealed class LayoutWidthConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        // value = LayoutMode string. compact → narrow icon rail; default → 240.
+        string mode = value as string ?? "sidebar";
+        return string.Equals(mode, "compact", StringComparison.OrdinalIgnoreCase)
+            ? new GridLength(68)
+            : new GridLength(240);
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}
+
+public sealed class LayoutLabelVisConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, string language)
+    {
+        string mode = value as string ?? "sidebar";
+        return string.Equals(mode, "compact", StringComparison.OrdinalIgnoreCase)
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+    }
+    public object ConvertBack(object value, Type targetType, object parameter, string language) => throw new NotSupportedException();
+}
+
 public sealed class FormatDbConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)

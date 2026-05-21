@@ -33,8 +33,9 @@ public sealed class NoiseSuppressor
     public NoiseSuppressor()
     {
         _window = new double[FftSize];
+        // Periodic Hann (divisor N, not N-1) so 50% hop satisfies COLA exactly.
         for (int i = 0; i < FftSize; i++)
-            _window[i] = 0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / (FftSize - 1));
+            _window[i] = 0.5 - 0.5 * Math.Cos(2.0 * Math.PI * i / FftSize);
 
         // Pre-queue Hop zeros to compensate for STFT latency (avoids
         // emitting nothing until the first full frame arrives).

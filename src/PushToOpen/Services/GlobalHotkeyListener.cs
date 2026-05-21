@@ -24,7 +24,8 @@ public sealed class GlobalHotkeyListener : IGlobalHotkeyListener
     private LowLevelProc? _keyboardProc;
     private LowLevelProc? _mouseProc;
     private KeyBindingInfo? _binding;
-    private bool _keyHeld;
+    private bool _kbHeld;
+    private bool _mouseHeld;
     private bool _disposed;
 
     public event EventHandler? Triggered;
@@ -72,16 +73,16 @@ public sealed class GlobalHotkeyListener : IGlobalHotkeyListener
                 {
                     if ((ushort)kb.vkCode == binding.VirtualKey)
                     {
-                        if (!_keyHeld)
+                        if (!_kbHeld)
                         {
-                            _keyHeld = true;
+                            _kbHeld = true;
                             try { Triggered?.Invoke(this, EventArgs.Empty); } catch { }
                         }
                     }
                 }
                 else if (msg == 0x0101 /*WM_KEYUP*/ || msg == 0x0105 /*WM_SYSKEYUP*/)
                 {
-                    if ((ushort)kb.vkCode == binding.VirtualKey) _keyHeld = false;
+                    if ((ushort)kb.vkCode == binding.VirtualKey) _kbHeld = false;
                 }
             }
         }
@@ -106,16 +107,16 @@ public sealed class GlobalHotkeyListener : IGlobalHotkeyListener
                 };
                 if (vk.HasValue && vk.Value == binding.VirtualKey)
                 {
-                    if (!_keyHeld)
+                    if (!_mouseHeld)
                     {
-                        _keyHeld = true;
+                        _mouseHeld = true;
                         try { Triggered?.Invoke(this, EventArgs.Empty); } catch { }
                     }
                 }
                 else if (msg == 0x0202 /*WM_LBUTTONUP*/ || msg == 0x0205 /*WM_RBUTTONUP*/ ||
                          msg == 0x0208 /*WM_MBUTTONUP*/ || msg == 0x020C /*WM_XBUTTONUP*/)
                 {
-                    _keyHeld = false;
+                    _mouseHeld = false;
                 }
             }
         }

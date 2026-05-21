@@ -23,6 +23,8 @@
             <conv:MicGlyphConverter x:Key="MicGlyph" />
             <conv:MicBrushConverter x:Key="MicBrush" />
             <conv:AllowLabelConverter x:Key="AllowLabel" />
+            <conv:LayoutWidthConverter x:Key="LayoutWidth" />
+            <conv:LayoutLabelVisConverter x:Key="LayoutLabelVis" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

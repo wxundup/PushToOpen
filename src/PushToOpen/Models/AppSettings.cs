@@ -60,6 +60,16 @@ public sealed class AppSettings
 
     public string? RestrictToProcessDisplayName { get; set; }
 
+    // Theme system
+    public string ThemeName { get; set; } = "Indigo Night";
+
+    public string? BackgroundImagePath { get; set; }
+
+    public double BackgroundImageOpacity { get; set; } = 0.18;
+
+    /// <summary>"sidebar" (default) or "compact" (top tabs, no left rail).</summary>
+    public string LayoutMode { get; set; } = "sidebar";
+
     [JsonIgnore]
     public double ThresholdLinear => DbToLinear(ThresholdDb);
 

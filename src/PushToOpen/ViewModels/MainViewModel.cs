@@ -10,6 +10,7 @@ public sealed partial class MainViewModel : ObservableObject
     public HotkeyViewModel Hotkey { get; }
     public OverlayViewModel Overlay { get; }
     public WindowViewModel Window { get; }
+    public ThemesViewModel Themes { get; }
     public AppPreferencesViewModel Preferences { get; }
 
     public MainViewModel(
@@ -18,6 +19,7 @@ public sealed partial class MainViewModel : ObservableObject
         HotkeyViewModel hotkey,
         OverlayViewModel overlay,
         WindowViewModel window,
+        ThemesViewModel themes,
         AppPreferencesViewModel preferences)
     {
         Home = home;
@@ -25,6 +27,7 @@ public sealed partial class MainViewModel : ObservableObject
         Hotkey = hotkey;
         Overlay = overlay;
         Window = window;
+        Themes = themes;
         Preferences = preferences;
     }
 

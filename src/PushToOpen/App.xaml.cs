@@ -43,6 +43,10 @@ public partial class App : Application
         var settings = Services.GetRequiredService<ISettingsService>();
         await settings.LoadAsync();
 
+        // Apply persisted theme to resource brushes before any window resolves.
+        var themes = Services.GetRequiredService<IThemeService>();
+        themes.Apply(settings.Current.ThemeName);
+
         var coordinator = Services.GetRequiredService<PushToTalkCoordinator>();
         await coordinator.StartAsync();
 
@@ -79,11 +83,13 @@ public partial class App : Application
         settings.SettingsChanged += _overlaySettingsHandler;
 
         // Global mute-toggle hotkey: listen for the bound key + flip s.Muted.
+        // Triggered fires on the LL-hook thread — bounce off it immediately so
+        // the mutate/persist chain doesn't risk LowLevelHooksTimeout unhooking us.
         var muteListener = Services.GetRequiredService<IGlobalHotkeyListener>();
         muteListener.SetBinding(settings.Current.MuteToggleHotkey);
         muteListener.Triggered += (_, _) =>
         {
-            settings.Mutate(s => s.Muted = !s.Muted);
+            _ = Task.Run(() => settings.Mutate(s => s.Muted = !s.Muted));
         };
         muteListener.Start();
         settings.SettingsChanged += (_, s) => muteListener.SetBinding(s.MuteToggleHotkey);
@@ -116,6 +122,7 @@ public partial class App : Application
         services.AddSingleton<IStartupService, StartupService>();
         services.AddSingleton<IForegroundWatcher, ForegroundWatcher>();
         services.AddSingleton<IWindowEnumerator, WindowEnumerator>();
+        services.AddSingleton<IThemeService, ThemeService>();
         services.AddSingleton<PushToTalkCoordinator>();
 
         services.AddSingleton<HomeViewModel>();
@@ -123,6 +130,7 @@ public partial class App : Application
         services.AddSingleton<HotkeyViewModel>();
         services.AddSingleton<OverlayViewModel>();
         services.AddSingleton<WindowViewModel>();
+        services.AddSingleton<ThemesViewModel>();
         services.AddSingleton<AppPreferencesViewModel>();
         services.AddSingleton<MainViewModel>();
 
